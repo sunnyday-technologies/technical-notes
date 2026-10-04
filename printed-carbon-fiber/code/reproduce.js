@@ -8,7 +8,8 @@ const G = { L: 101.6, b: 12.7, dy: 0.12, ny: 52, nx: 120, P: 30 * LBF, loadHalf:
 // Matrix polymers (Table 1). PETG: Faidallah et al. 2023 (D3039 0 deg, peer reviewed); compression Amza et al. 2021.
 // PLA, PA: manufacturer ISO 527 data. cf: FibreSeek X-CCF compressive / tensile strength for that matrix.
 const PLASTIC = { PLA: { E: 2300, st: 51, sc: 78.1, ey: 0.029, eu: 0.063, cf: 0.33 }, PETG: { E: 1620, st: 28.3, sc: 65.9, ey: 0.042, eu: 0.075, cf: 0.24 }, PA: { E: 2700, st: 78, sc: 78, ey: 0.029, eu: 0.127, cf: 0.24 } };
-// Chopped carbon fiber reference: Bambu Lab PPA-CF, ISO 527 X-Y, dry; compression taken equal to tension
+// Chopped carbon fiber reference: Bambu Lab PPA-CF, ISO 527 X-Y, dry; compression taken equal to tension.
+// Carbon fibre 12 to 18 wt% per the Bambu SDS (about 8 to 13 vol% at 1.25 g/cm3); not used in the model, which takes the composite data directly
 const PPACF = { E: 11800, st: 168, sc: 168, ey: 0.032, eu: 0.032 };
 // Fiber layer calibrated to peer-reviewed 0 deg coupon data per unit carbon fraction (Iragi 2019; Smojver 2026; Adumitroaie 2019)
 const CAL = { E: 161000, st: 2100, cfPR: 0.47 };
