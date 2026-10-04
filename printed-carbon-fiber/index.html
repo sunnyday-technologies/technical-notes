@@ -60,6 +60,7 @@ h1{font-family:var(--sans);font-weight:700;font-size:clamp(1.55rem,3.6vw,2.15rem
 .stage canvas{display:block;width:100%;height:100%}
 .tag{position:absolute;font-family:var(--sans);font-size:.74rem;color:var(--ink);background:rgba(255,255,255,.92);border:1px solid var(--rule);padding:.12rem .45rem;white-space:nowrap;pointer-events:none;transform:translate(0,-100%)}
 .tag b{color:var(--navy);font-weight:700}
+.tag.ptag{transform:translate(-50%,-100%);text-align:center;white-space:normal;width:15rem;font-size:.68rem;line-height:1.35}
 .cbar{position:absolute;right:.8rem;top:.6rem;display:grid;gap:.2rem;font-family:var(--sans);font-size:.68rem;color:var(--muted);pointer-events:none;text-align:right;background:rgba(255,255,255,.85);padding:.35rem .5rem}
 .cbar i{display:block;width:10rem;height:.55rem}
 .cbar span{display:flex;justify-content:space-between}
@@ -163,7 +164,7 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
     </div>
     <div class="abstract">
       <h4>Abstract</h4>
-      <p>Desktop printers that co-extrude a continuous carbon fiber strand inside a thermoplastic bead have drawn wide attention, including a Kickstarter campaign that closed with US$4.70 million pledged <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-2">[2]</a>. This note quantifies what a printed part contains and what the fiber does in bending. A 0.24 mm strand in a 0.70 × 0.24 mm bead occupies 26.9% of the bead section; at an assumed 60% carbon within the strand, carbon is 16% of the bead. At one scale, published sections show a larger Markforged strand (0.33 to 0.38 mm) with 23 to 37% carbon, measured by image analysis of printed parts and by thermogravimetric analysis of the tow. A layered two-dimensional finite element model of a 4 in (101.6 mm) PETG bar in three-point bending, at 3.1% carbon by volume, predicts a 5.9-fold stiffness increase with fiber near both faces and no gain in load to first damage (1.0×) when fiber compression strength is taken as 34% of tension. Fiber on the tension face only, with half the fiber, gives 2.1× stiffness and 1.7× load to first damage. The both-face strength result depends on the compression assumption (0.8× at 25%, 1.5× at 50%); the tension-face result stays at 1.7×. In this model, fiber placement determines whether continuous fiber increases the load to first damage. With uniform full-length fiber, natural frequencies rise roughly with the square root of the stiffness ratio; other layouts change mode shapes and must be analyzed per design. All results are model estimates pending polished sections and load-frame tests.</p>
+      <p>Desktop printers that co-extrude a continuous carbon fiber strand inside a thermoplastic bead have drawn wide attention, including a Kickstarter campaign that closed with US$4.70 million pledged <a class="cite" href="#ref-3">[3]</a>, <a class="cite" href="#ref-4">[4]</a>. This note quantifies what a printed part contains and what the fiber does in bending. A 0.24 mm strand in a 0.70 × 0.24 mm bead occupies 26.9% of the bead section; at an assumed 60% carbon within the strand, carbon is 16% of the bead. At one scale, published sections show a larger Markforged strand (0.33 to 0.38 mm) with 23 to 37% carbon, measured by image analysis of printed parts and by thermogravimetric analysis of the tow. A layered two-dimensional finite element model of a 4 in (101.6 mm) PETG bar in three-point bending, at 3.1% carbon by volume, predicts a 5.9-fold stiffness increase with fiber near both faces and no gain in load to first damage (1.0×) when fiber compression strength is taken as 34% of tension. Fiber on the tension face only, with half the fiber, gives 2.1× stiffness and 1.7× load to first damage. The both-face strength result depends on the compression assumption (0.8× at 25%, 1.5× at 50%); the tension-face result stays at 1.7×. In this model, fiber placement determines whether continuous fiber increases the load to first damage. With uniform full-length fiber, natural frequencies rise roughly with the square root of the stiffness ratio; other layouts change mode shapes and must be analyzed per design. All results are model estimates pending polished sections and load-frame tests.</p>
     </div>
   </div>
 
@@ -187,18 +188,18 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
 <section class="ga" aria-label="Graphical abstract">
   <div class="ga-head"><span>Graphical abstract (interactive)</span><span>Drag to rotate · deflection shown 3× actual</span></div>
   <p class="ga-title">Same 4 in PETG bar, same 30 lbf at midspan: no fiber, fiber near both faces, fiber on the tension face only.</p>
-  <p class="ga-sub">Color (switch below): fraction of each layer's estimated first-damage stress, where blue is low and red is at or above first damage; or bending stress, where red is tension and blue is compression, on the scale of the unreinforced bar (the fiber layers carry more and saturate).</p>
+  <p class="ga-sub">Mode (below): axial strain as a fraction of each layer's failure strain (1.0 = ultimate), or axial stress &sigma;<sub>x</sub> on one scale for all three bars; both on the Turbo high-contrast map. The legend tick marks the polymer's yield strain; fiber layers are brittle, so yield and ultimate coincide, and their failure strain is lower in compression than in tension. Left of each bar: the midspan section, depth enlarged 3×, with stress as filled bars and strain as a line. Strain stays linear through the depth; stress jumps in every fiber layer.</p>
   <div class="stage" id="stage">
-    <canvas id="three" aria-label="3D finite element view of three bars under three-point bending, colored by stress as a fraction of first-damage stress."></canvas>
+    <canvas id="three" aria-label="3D finite element view of three bars under three-point bending, colored by axial strain as a fraction of failure strain."></canvas>
     <div id="tags"></div>
-    <div class="cbar"><span id="cbarTitle">Fraction of first-damage stress</span><i id="cbarGrad"></i><span><span id="cbarLo">0</span><span id="cbarMid">0.5</span><span id="cbarHi">1.0+</span></span></div>
+    <div class="cbar"><span id="cbarTitle">Fraction of failure strain</span><i id="cbarGrad" style="position:relative"><b id="cbarYield" style="position:absolute;top:-3px;bottom:-3px;width:2px;background:#111417"></b></i><span><span id="cbarLo">0</span><span id="cbarMid">0.5</span><span id="cbarHi">1.0+</span></span><span id="cbarNote" style="display:block;text-align:left;max-width:12rem"></span></div>
     <div class="busy" id="busy">Solving the FEA…</div>
   </div>
   <div class="try">
     <div class="try-head"><b>Inputs</b>Change the polymer or the fiber; the model solves again in your browser and updates Table 3 and Section 4.4.</div>
     <div class="controls" id="controls">
-      <label for="cmode">Color the bars by
-        <select id="cmode"><option value="util" selected>Fraction of first-damage stress</option><option value="stress">Bending stress (tension red, compression blue)</option></select>
+      <label for="mode">Mode
+        <select id="mode"><option value="strain" selected>Strain, fraction of failure strain</option><option value="stress">Stress, &sigma;<sub>x</sub> (MPa)</option></select>
       </label>
       <label for="mat">Polymer
         <select id="mat"><option value="PETG" selected>PETG (clear)</option><option value="PLA">PLA</option><option value="PA">Nylon (PA)</option></select>
@@ -213,7 +214,7 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
         <span class="row"><input id="cf" type="range" min="25" max="100" step="1" value="34"><output id="cfOut" for="cf">34%</output></span>
       </label>
     </div>
-    <div class="try-note">Defaults: PETG, 3 layers per face, 60% carbon within the strand (assumed), compression at 34% of tension (290/860 MPa) <a class="cite" href="#ref-3">[3]</a>.</div>
+    <div class="try-note">Defaults: PETG, 3 layers per face, 60% carbon within the strand (assumed), compression at 34% of tension (290/860 MPa) <a class="cite" href="#ref-6">[6]</a>.</div>
   </div>
   <div class="abstract-tiles">
     <div>
@@ -227,9 +228,8 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
       <p>0.24 mm strand in a 0.70 × 0.24 mm bead: 27% strand, 73% polymer.</p>
     </div>
     <div>
-      <h3>(c) Results at 30 lbf (Table 3)</h3>
+      <h3>(c) Table 3. Layered 2D FEA estimate, <span id="tNfHead">3</span> fiber layers per face, 30 lbf</h3>
       <table class="res" id="res" aria-live="polite"></table>
-      <p>Layered 2D FEA estimate. Not a test result.</p>
     </div>
   </div>
 </section>
@@ -238,39 +238,39 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
 <div class="paper">
 <h2>1. Introduction</h2>
 <p>Many polymer parts are almost strong enough: they meet most requirements but fall short on stiffness or strength at one location. For years I have asked whether a single strand of carbon fiber, placed where the load runs, would supply the small increment of strength and stiffness that enables the design. I strongly believed it could.</p>
-<p>This requires fiber placed by the design, strand by strand, rather than a mask or patch of fiber laid over a region. Each strand is a towpreg: a bundle (tow) of carbon filaments pre-impregnated with a resin whose chemistry, thermoset or thermoplastic, FibreSeek does not publish. Standard-modulus carbon fiber is linear-elastic to failure at about 1.5 to 2% strain, with no yielding <a class="cite" href="#ref-4">[4]</a>. It should be placed only where the load requires it.</p>
-<p>Desktop co-extrusion printers, reported at under US$3,000 <a class="cite" href="#ref-5">[5]</a>, allow this to be tested outside an industrial laboratory. The FibreSeeker 3 (FibreSeek) Kickstarter campaign closed on 1 January 2026 with US$4,698,825 pledged by 1,539 backers against a US$50,000 goal <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-2">[2]</a>, with a price of US$2,699 reported at announcement in September 2025 <a class="cite" href="#ref-5">[5]</a>; current pricing may differ. Its headline strength, up to 900 MPa (130 ksi) <a class="cite" href="#ref-6">[6]</a>, is given without a load direction. Comparable published values for printed continuous carbon, such as 860 MPa <a class="cite" href="#ref-3">[3]</a>, are tensile properties in the fiber direction. Reviewer results summarized in <a class="cite" href="#ref-2">[2]</a> varied by load type. These are not controlled tests.</p>
+<p>This requires fiber placed by the design, strand by strand, rather than a mask or patch of fiber laid over a region. Each strand is a towpreg: a bundle (tow) of carbon filaments pre-impregnated with a resin whose chemistry, thermoset or thermoplastic, FibreSeek does not publish. Standard-modulus carbon fiber is linear-elastic to failure at about 1.5 to 2% strain, with no yielding <a class="cite" href="#ref-1">[1]</a>. It should be placed only where the load requires it.</p>
+<p>Desktop co-extrusion printers, reported at under US$3,000 <a class="cite" href="#ref-2">[2]</a>, allow this to be tested outside an industrial laboratory. The FibreSeeker 3 (FibreSeek) Kickstarter campaign closed on 1 January 2026 with US$4,698,825 pledged by 1,539 backers against a US$50,000 goal <a class="cite" href="#ref-3">[3]</a>, <a class="cite" href="#ref-4">[4]</a>, with a price of US$2,699 reported at announcement in September 2025 <a class="cite" href="#ref-2">[2]</a>; current pricing may differ. Its headline strength, up to 900 MPa (130 ksi) <a class="cite" href="#ref-5">[5]</a>, is given without a load direction. Comparable published values for printed continuous carbon, such as 860 MPa <a class="cite" href="#ref-6">[6]</a>, are tensile properties in the fiber direction. Reviewer results summarized in <a class="cite" href="#ref-4">[4]</a> varied by load type. These are not controlled tests.</p>
 <p>This note answers three questions. (1) What fraction of a printed bead is carbon? (2) How does the bead compare, at the same scale, with published sections from other continuous-fiber platforms? (3) Where must fiber be placed to raise stiffness and load to first damage in bending? Fiber cost, print time and part performance all depend on where, and how much, fiber is laid.</p>
 
 <h2>2. Process background</h2>
-<p>In co-extrusion, the strand passes through a heated composite nozzle together with metered thermoplastic and is pressed onto the previous layer as one bead. Anisoprint <a class="cite" href="#ref-7">[7]</a> and, per its specification, the FibreSeeker 3 <a class="cite" href="#ref-6">[6]</a>, <a class="cite" href="#ref-8">[8]</a> co-extrude the strand with thermoplastic. Markforged prints a pre-impregnated fiber filament without added polymer <a class="cite" href="#ref-9">[9]</a>. On published systems a cutter upstream of the nozzle cuts the strand before the path ends, so each fiber run has a minimum length set by the cutter-to-tip distance, and the strand cannot follow corners tighter than its minimum bend radius. The FibreSeeker 3 values of both are not published. On these desktop platforms fiber is laid only in planar layers. In the model of Section 3.3, walls, infill and skins are unreinforced; some platforms also lay fiber as concentric rings inside walls.</p>
-<p>For the FibreSeeker 3 this note takes a 0.24 mm (0.0094 in) strand and a 0.70 mm (0.028 in) composite nozzle. The nozzle diameter is published <a class="cite" href="#ref-6">[6]</a>; the strand diameter was measured by the author with a digital caliper at several locations along the supplied strand, and the readings were consistent at 0.24 mm. This note assumes fiber layers 0.24 mm tall, equal to two 0.12 mm (0.0047 in) polymer layers. The 0.24 mm fiber layer height is the author's process assumption, not a published FibreSeeker 3 setting. It is sized so that the strand is not flattened by design; any layer-height or overfill error will flatten it.</p>
+<p>In co-extrusion, the strand passes through a heated composite nozzle together with metered thermoplastic and is pressed onto the previous layer as one bead. Anisoprint <a class="cite" href="#ref-7">[7]</a> and, per its specification, the FibreSeeker 3 <a class="cite" href="#ref-5">[5]</a>, <a class="cite" href="#ref-8">[8]</a> co-extrude the strand with thermoplastic. Markforged prints a pre-impregnated fiber filament without added polymer <a class="cite" href="#ref-9">[9]</a>. On published systems a cutter upstream of the nozzle cuts the strand before the path ends, so each fiber run has a minimum length set by the cutter-to-tip distance, and the strand cannot follow corners tighter than its minimum bend radius. The FibreSeeker 3 values of both are not published. On these desktop platforms fiber is laid only in planar layers. In the model of Section 3.3, walls, infill and skins are unreinforced; some platforms also lay fiber as concentric rings inside walls.</p>
+<p>For the FibreSeeker 3 this note takes a 0.24 mm (0.0094 in) strand and a 0.70 mm (0.028 in) composite nozzle. The nozzle diameter is published <a class="cite" href="#ref-5">[5]</a>; the strand diameter was measured by the author with a digital caliper at several locations along the supplied strand, and the readings were consistent at 0.24 mm. This note assumes fiber layers 0.24 mm tall, equal to two 0.12 mm (0.0047 in) polymer layers. The 0.24 mm fiber layer height is the author's process assumption, not a published FibreSeeker 3 setting. It is sized so that the strand is not flattened by design; any layer-height or overfill error will flatten it.</p>
 
 <h2>3. Methods</h2>
 <h3>3.1 Bead composition</h3>
 <p>The strand area and bead area follow from the dimensions above, with the bead idealized as a rectangle of width <i>w</i> and height <i>h</i>:</p>
 <p class="eq">A<sub>s</sub> = π d<sup>2</sup>/4 = 0.0452 mm<sup>2</sup>, &nbsp; A<sub>b</sub> = w h = 0.70 × 0.24 = 0.168 mm<sup>2</sup>, &nbsp; φ<sub>s</sub> = A<sub>s</sub>/A<sub>b</sub> = 0.269 <span>(1)</span></p>
-<p>The carbon fraction of the bead is φ<sub>c</sub> = φ<sub>s</sub> V<sub>s</sub>, where V<sub>s</sub> is the carbon volume fraction within the strand. FibreSeek does not publish V<sub>s</sub>. The default, 60%, is an assumption; the model allows 30 to 85%. The upper bound, 85%, is 1,000 filaments of 7 µm in a 0.24 mm strand. It approaches the hexagonal packing limit (90.7%) and exceeds the roughly 70% that impregnated tows achieve in practice, so it is a geometric bound only. A 1,000-filament tow of 8.6 µm filaments, as measured in Markforged strand <a class="cite" href="#ref-10">[10]</a>, would not fit in 0.24 mm. A bead with semicircular ends (stadium, 0.156 mm<sup>2</sup>) gives φ<sub>s</sub> = 0.291. Fig. 1 shows the bead drawn to scale, with 7 µm filaments <a class="cite" href="#ref-4">[4]</a> placed on a randomly jittered hexagonal lattice at V<sub>s</sub>.</p>
+<p>The carbon fraction of the bead is φ<sub>c</sub> = φ<sub>s</sub> V<sub>s</sub>, where V<sub>s</sub> is the carbon volume fraction within the strand. FibreSeek does not publish V<sub>s</sub>. The default, 60%, is an assumption; the model allows 30 to 85%. The upper bound, 85%, is 1,000 filaments of 7 µm in a 0.24 mm strand. It approaches the hexagonal packing limit (90.7%) and exceeds the roughly 70% that impregnated tows achieve in practice, so it is a geometric bound only. A 1,000-filament tow of 8.6 µm filaments, as measured in Markforged strand <a class="cite" href="#ref-10">[10]</a>, would not fit in 0.24 mm. A bead with semicircular ends (stadium, 0.156 mm<sup>2</sup>) gives φ<sub>s</sub> = 0.291. Fig. 1 shows the bead drawn to scale, with 7 µm filaments <a class="cite" href="#ref-1">[1]</a> placed on a randomly jittered hexagonal lattice at V<sub>s</sub>.</p>
 
 <h3>3.2 Same-scale comparison with published sections</h3>
 <p>Polished sections of Markforged material <a class="cite" href="#ref-9">[9]</a> and a co-extruded Anisoprint strand <a class="cite" href="#ref-7">[7]</a>, both published under CC BY 4.0, were cropped and rescaled to a common scale. Scales were set from scale bars measured in pixels: 40 µm = 29 px (ref. <a class="cite" href="#ref-9">[9]</a>, Fig. 4a); 50 µm = 17.5 px (ref. <a class="cite" href="#ref-9">[9]</a>, Fig. 6b, consistent with its 125 µm layer spacing; ±0.5 px is ±3% in scale); 1,000 µm = 1,275 px (ref. <a class="cite" href="#ref-7">[7]</a>, Fig. 9). Modeled sections were drawn at the same scale.</p>
 
 <h3>3.3 Finite element model</h3>
 <p>A bar 101.6 mm (4 in) between supports, 12.7 mm (1/2 in) wide and 6.24 mm (about 1/4 in) thick (52 layers of 0.12 mm) was loaded in three-point bending with 133 N (30 lbf) spread over 5 mm at midspan. The span-to-depth ratio, 16.3, matches ASTM D790. The model is linear-elastic, two-dimensional plane stress, with 120 × 52 four-node bilinear elements (2 × 2 Gauss integration) and layers perfectly bonded. On the unreinforced bar the solver agrees with Euler-Bernoulli beam theory within 1%, so shear locking is not significant at 52 elements through the thickness. This verifies the solver; it does not validate the model against tests. An independent transformed-section beam check with Timoshenko shear gives stiffness ratios of 5.99 (fiber near both faces) and 2.08 (tension face only), against 5.9 and 2.1 from the FEA, and a hand calculation for the plain bar gives 32.8 lbf to first damage, against 32 lbf from the FEA.</p>
-<p>Each face carries two 0.12 mm polymer skin layers, then three 0.24 mm fiber layers separated by 0.12 mm polymer layers, so fiber lies 0.24 to 1.20 mm from each face. Each fiber layer holds 15 beads of 0.70 mm across 10.5 mm, with unreinforced walls about 1.1 mm wide at both edges, and is homogenized by the rule of mixtures <a class="cite" href="#ref-4">[4]</a> (Table 1). The model takes each fiber layer as 15 straight runs along the full bar, each cut individually, with no overlap between beads. Three layouts were solved: no fiber; three fiber layers near each face; three fiber layers near the tension face only.</p>
+<p>Each face carries two 0.12 mm polymer skin layers, then three 0.24 mm fiber layers separated by 0.12 mm polymer layers, so fiber lies 0.24 to 1.20 mm from each face. Each fiber layer holds 15 beads of 0.70 mm across 10.5 mm, with unreinforced walls about 1.1 mm wide at both edges, and is homogenized by the rule of mixtures <a class="cite" href="#ref-1">[1]</a> (Table 1). The model takes each fiber layer as 15 straight runs along the full bar, each cut individually, with no overlap between beads. Three layouts were solved: no fiber; three fiber layers near each face; three fiber layers near the tension face only.</p>
 <p>The stiffness and strength efficiencies of the fiber layer (85% and 55%) are model assumptions. As a check of the material rules, Matsuzaki et al. measured 19.5 GPa and 185 MPa in tension for 6.6% continuous carbon in PLA <a class="cite" href="#ref-11">[11]</a>; the same rules predict about 16 GPa and 130 MPa, 17% and 30% below measurement, so the model is conservative in tension. No compression or flexure data were checked. Matsuzaki et al. impregnated a dry tow with PLA in the nozzle, so the check covers the mixing rules but not the strand-to-polymer interface used here.</p>
 <p>Damage is assessed per element as the axial stress σ<sub>x</sub> divided by an estimated first-damage stress, in tension or compression; other stress components are not checked. Elements within 6 mm of midspan and 4 mm of the supports are excluded to avoid contact stresses. Because the bending moment varies linearly along the span, each checked element is scaled to the peak midspan moment, so the reported load corresponds to the peak moment. The load to first damage is the load at which the first element reaches 1.0. For the plain bar this gives 32 lbf against about 33 lbf from beam theory. Local crushing or kinking under the loading nose is not captured.</p>
-<p>Printed continuous carbon is much weaker in compression than in tension. The default compression strength, 34% of tension, is the ratio of one supplier's published printed-composite values (290 MPa compression, 860 MPa tension) <a class="cite" href="#ref-3">[3]</a>. Those values are for a cured-thermoset strand printed in PETG and may not transfer to a strand of different resin chemistry. Transferring the allowable by strain instead of by stress (290 MPa / 64 GPa = 0.45%) gives about 48% of tension for the bead. Table 4 gives results from 25 to 100%.</p>
+<p>Printed continuous carbon is much weaker in compression than in tension. The default compression strength, 34% of tension, is the ratio of one supplier's published printed-composite values (290 MPa compression, 860 MPa tension) <a class="cite" href="#ref-6">[6]</a>. Those values are for a cured-thermoset strand printed in PETG and may not transfer to a strand of different resin chemistry. Transferring the allowable by strain instead of by stress (290 MPa / 64 GPa = 0.45%) gives about 48% of tension for the bead. Table 4 gives results from 25 to 100%.</p>
 
 <div class="tbl"><table>
-  <caption><b>Table 1.</b> Model inputs. Polymer values are typical published values; printed values vary with raster, layer height and moisture. Bead values are at the default 60% carbon within the strand.</caption>
-  <thead><tr><th>Material</th><th class="n">Modulus (GPa)</th><th class="n">Tension (MPa)</th><th class="n">Compression (MPa)</th><th>Basis</th></tr></thead>
+  <caption><b>Table 1.</b> Model inputs. Polymer moduli and strengths are typical published values; yield and ultimate strains are in-plane (XY) values from printed-specimen datasheets <a class="cite" href="#ref-12">[12]</a>. Across layers (Z), break strain falls to about 1.3 to 3.3%. Printed values vary with raster, layer height and moisture. Bead values are at the default 60% carbon within the strand.</caption>
+  <thead><tr><th>Material</th><th class="n">Modulus (GPa)</th><th class="n">Tension (MPa)</th><th class="n">Compression (MPa)</th><th class="n">Yield strain (%)</th><th class="n">Ultimate strain (%)</th><th>Basis</th></tr></thead>
   <tbody>
-    <tr><td>PETG</td><td class="n">2.0</td><td class="n">45</td><td class="n">55</td><td>Typical</td></tr>
-    <tr><td>PLA</td><td class="n">3.5</td><td class="n">50</td><td class="n">65</td><td>Typical</td></tr>
-    <tr><td>Nylon (PA), moisture state not specified</td><td class="n">1.7</td><td class="n">60</td><td class="n">60</td><td>Typical; PA absorbs 2 to 3% water, which lowers modulus and strength</td></tr>
-    <tr><td>Carbon fiber</td><td class="n">230</td><td class="n">3,500</td><td class="n">n/a</td><td>Standard modulus <a class="cite" href="#ref-4">[4]</a></td></tr>
-    <tr><td>Fiber bead, along fiber (PETG)</td><td class="n">33</td><td class="n">310</td><td class="n">105</td><td>Rule of mixtures; 85% stiffness and 55% strength efficiency (assumed); compression 34% of tension <a class="cite" href="#ref-3">[3]</a></td></tr>
+    <tr><td>PETG</td><td class="n">2.0</td><td class="n">45</td><td class="n">55</td><td class="n">5.0</td><td class="n">8</td><td>Typical; strains <a class="cite" href="#ref-12">[12]</a></td></tr>
+    <tr><td>PLA</td><td class="n">3.5</td><td class="n">50</td><td class="n">65</td><td class="n">3.0</td><td class="n">6</td><td>Typical; strains <a class="cite" href="#ref-12">[12]</a></td></tr>
+    <tr><td>Nylon (PA), dry</td><td class="n">1.7</td><td class="n">60</td><td class="n">60</td><td class="n">6</td><td class="n">13</td><td>Typical; strains <a class="cite" href="#ref-12">[12]</a>. Moisture conditioning lowers modulus about 3.7 times</td></tr>
+    <tr><td>Carbon fiber</td><td class="n">230</td><td class="n">3,500</td><td class="n">n/a</td><td class="n">1.5</td><td class="n">1.5</td><td>Standard modulus, brittle <a class="cite" href="#ref-1">[1]</a></td></tr>
+    <tr><td>Fiber bead, along fiber (PETG)</td><td class="n">33</td><td class="n">310</td><td class="n">105</td><td class="n">0.93 (T) / 0.32 (C)</td><td class="n">0.93 (T) / 0.32 (C)</td><td>Rule of mixtures; 85% stiffness and 55% strength efficiency (assumed); compression 34% of tension <a class="cite" href="#ref-6">[6]</a>; brittle, failure strain = strength / modulus</td></tr>
   </tbody>
 </table></div>
 
@@ -294,7 +294,7 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
 
 <div class="paper">
 <h3>4.2 Comparison with published sections</h3>
-<p>Fig. 2 places the bead next to published sections at one scale. The Markforged strand measures 0.33 to 0.38 mm (0.013 to 0.015 in) <a class="cite" href="#ref-10">[10]</a>, <a class="cite" href="#ref-12">[12]</a> and is described as about 1,000 carbon filaments in a polyamide matrix <a class="cite" href="#ref-9">[9]</a>. Image analysis of printed parts gives 22.6 to 28.7% carbon by volume <a class="cite" href="#ref-10">[10]</a>; thermogravimetric analysis (TGA) of the fiber tow gives 37.4% by volume, a value for the tow, not for the printed laminate <a class="cite" href="#ref-9">[9]</a>. The image-analysis values are below the 34 to 71% that 1,000 filaments of 7 to 8.8 µm would give in that strand <a class="cite" href="#ref-10">[10]</a>, so they are best read as printed-section fractions. A higher value, 69%, is reported for printed Markforged laminates in <a class="cite" href="#ref-13">[13]</a>; the difference in method is not resolved here. Markforged prints the strand without added polymer, and printing flattens it into 0.125 mm (0.0049 in) layers about 0.9 mm wide, with about 11% voids measured by image analysis of polished sections in ImageJ <a class="cite" href="#ref-9">[9]</a>. The strand area, 0.086 to 0.113 mm<sup>2</sup>, is about equal to that bead section, so the Markforged bead is essentially all strand. The Anisoprint CCF strand, a 1.5K tow pre-impregnated with a cured thermoset resin, is 0.36 mm, with about 57% carbon within the as-supplied tow (reseller listing) <a class="cite" href="#ref-3">[3]</a>, and is co-extruded in 0.3 mm layers with large voids around the strand <a class="cite" href="#ref-7">[7]</a>. The 0.24 mm strand is the smallest of the three (Table 2).</p>
+<p>Fig. 2 places the bead next to published sections at one scale. The Markforged strand measures 0.33 to 0.38 mm (0.013 to 0.015 in) <a class="cite" href="#ref-10">[10]</a>, <a class="cite" href="#ref-13">[13]</a> and is described as about 1,000 carbon filaments in a polyamide matrix <a class="cite" href="#ref-9">[9]</a>. Image analysis of printed parts gives 22.6 to 28.7% carbon by volume <a class="cite" href="#ref-10">[10]</a>; thermogravimetric analysis (TGA) of the fiber tow gives 37.4% by volume, a value for the tow, not for the printed laminate <a class="cite" href="#ref-9">[9]</a>. The image-analysis values are below the 34 to 71% that 1,000 filaments of 7 to 8.8 µm would give in that strand <a class="cite" href="#ref-10">[10]</a>, so they are best read as printed-section fractions. A higher value, 69%, is reported for printed Markforged laminates in <a class="cite" href="#ref-14">[14]</a>; the difference in method is not resolved here. Markforged prints the strand without added polymer, and printing flattens it into 0.125 mm (0.0049 in) layers about 0.9 mm wide, with about 11% voids measured by image analysis of polished sections in ImageJ <a class="cite" href="#ref-9">[9]</a>. The strand area, 0.086 to 0.113 mm<sup>2</sup>, is about equal to that bead section, so the Markforged bead is essentially all strand. The Anisoprint CCF strand, a 1.5K tow pre-impregnated with a cured thermoset resin, is 0.36 mm, with about 57% carbon within the as-supplied tow (reseller listing) <a class="cite" href="#ref-6">[6]</a>, and is co-extruded in 0.3 mm layers with large voids around the strand <a class="cite" href="#ref-7">[7]</a>. The 0.24 mm strand is the smallest of the three (Table 2).</p>
 </div>
 
 <div class="wide">
@@ -309,16 +309,16 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
   <caption><b>Table 2.</b> Strand, bead and deposition data by platform. Values are published unless marked.</caption>
   <thead><tr><th>Platform</th><th class="n">Strand (mm)</th><th>Tow</th><th>Carbon in strand (vol%)</th><th>Added polymer at nozzle</th><th class="n">Bead w × h (mm)</th><th class="n">Bead area (mm²)</th><th>Fiber deposition rate</th></tr></thead>
   <tbody>
-    <tr><td>Markforged</td><td class="n">0.33 to 0.38 <a class="cite" href="#ref-10">[10]</a>, <a class="cite" href="#ref-12">[12]</a></td><td>About 1,000 filaments <a class="cite" href="#ref-9">[9]</a></td><td>22.6 to 28.7 <a class="cite" href="#ref-10">[10]</a> (printed sections, image analysis); 37.4 <a class="cite" href="#ref-9">[9]</a> (tow, TGA)</td><td>None <a class="cite" href="#ref-9">[9]</a></td><td class="n">About 0.9 × 0.125 <a class="cite" href="#ref-9">[9]</a></td><td class="n">0.113</td><td>2.39 cm³/h, print setting, X7 <a class="cite" href="#ref-13">[13]</a></td></tr>
-    <tr><td>Anisoprint</td><td class="n">0.36 ± 0.02 <a class="cite" href="#ref-3">[3]</a></td><td>1.5K <a class="cite" href="#ref-3">[3]</a></td><td>57 ± 7 <a class="cite" href="#ref-3">[3]</a> (as-supplied tow, reseller listing)</td><td>Yes <a class="cite" href="#ref-7">[7]</a></td><td class="n">0.78 × 0.3, from <a class="cite" href="#ref-7">[7]</a> Fig. 9</td><td class="n">0.234</td><td>Not reported</td></tr>
-    <tr><td>FibreSeeker 3 (this note)</td><td class="n">0.24 (measured, caliper)</td><td>Not published</td><td>60 (assumed)</td><td>Yes <a class="cite" href="#ref-6">[6]</a>, <a class="cite" href="#ref-8">[8]</a></td><td class="n">0.70 × 0.24 (0.24 mm layer assumed)</td><td class="n">0.168</td><td>20 cm³/h, specification, basis not stated <a class="cite" href="#ref-6">[6]</a></td></tr>
+    <tr><td>Markforged</td><td class="n">0.33 to 0.38 <a class="cite" href="#ref-10">[10]</a>, <a class="cite" href="#ref-13">[13]</a></td><td>About 1,000 filaments <a class="cite" href="#ref-9">[9]</a></td><td>22.6 to 28.7 <a class="cite" href="#ref-10">[10]</a> (printed sections, image analysis); 37.4 <a class="cite" href="#ref-9">[9]</a> (tow, TGA)</td><td>None <a class="cite" href="#ref-9">[9]</a></td><td class="n">About 0.9 × 0.125 <a class="cite" href="#ref-9">[9]</a></td><td class="n">0.113</td><td>2.39 cm³/h, print setting, X7 <a class="cite" href="#ref-14">[14]</a></td></tr>
+    <tr><td>Anisoprint</td><td class="n">0.36 ± 0.02 <a class="cite" href="#ref-6">[6]</a></td><td>1.5K <a class="cite" href="#ref-6">[6]</a></td><td>57 ± 7 <a class="cite" href="#ref-6">[6]</a> (as-supplied tow, reseller listing)</td><td>Yes <a class="cite" href="#ref-7">[7]</a></td><td class="n">0.78 × 0.3, from <a class="cite" href="#ref-7">[7]</a> Fig. 9</td><td class="n">0.234</td><td>Not reported</td></tr>
+    <tr><td>FibreSeeker 3 (this note)</td><td class="n">0.24 (measured, caliper)</td><td>Not published</td><td>60 (assumed)</td><td>Yes <a class="cite" href="#ref-5">[5]</a>, <a class="cite" href="#ref-8">[8]</a></td><td class="n">0.70 × 0.24 (0.24 mm layer assumed)</td><td class="n">0.168</td><td>20 cm³/h, specification, basis not stated <a class="cite" href="#ref-5">[5]</a></td></tr>
   </tbody>
 </table></div>
 
 <h3>4.3 Deposition rate</h3>
 <p>Per unit path length, the 0.70 × 0.24 mm bead has 1.49 times the section of the 0.9 × 0.125 mm Markforged bead. The difference is added polymer: the Markforged bead is essentially all strand, and the FibreSeeker 3 bead is 73% polymer. Because a 0.70 mm bead covers less width than a 0.9 mm bead, filling a layer of given width takes 1.29 times the path length.</p>
 <p>Carbon per unit path length cannot be ranked from published data. The Markforged strand carries 0.019 to 0.042 mm<sup>2</sup> of carbon (0.086 to 0.113 mm<sup>2</sup> at 22.6 to 37.4%), and a 0.24 mm strand carries 0.014 to 0.038 mm<sup>2</sup> at 30 to 85% (0.027 mm<sup>2</sup> at the assumed 60%). The ranges overlap.</p>
-<p>The published rates are 2.39 cm³/h, a print setting on a Markforged X7 <a class="cite" href="#ref-13">[13]</a>, and 20 cm³/h in the FibreSeeker 3 specification <a class="cite" href="#ref-6">[6]</a>, whose basis (bead volume, strand volume or nozzle capacity) is not stated. At 0.168 mm<sup>2</sup> the specification implies about 33 mm/s head speed. The two values were obtained differently and are not directly comparable; bead size alone accounts for a factor of 1.49.</p>
+<p>The published rates are 2.39 cm³/h, a print setting on a Markforged X7 <a class="cite" href="#ref-14">[14]</a>, and 20 cm³/h in the FibreSeeker 3 specification <a class="cite" href="#ref-5">[5]</a>, whose basis (bead volume, strand volume or nozzle capacity) is not stated. At 0.168 mm<sup>2</sup> the specification implies about 33 mm/s head speed. The two values were obtained differently and are not directly comparable; bead size alone accounts for a factor of 1.49.</p>
 
 <h3>4.4 Flexural stiffness and first damage</h3>
 <p>The bar with fiber near both faces is <span id="tBarC">3.1</span>% carbon by volume; about 19% of the bar volume is fiber bead, placed near the outer surfaces. Results for the three layouts are given in the graphical abstract and Table 3.</p>
@@ -350,16 +350,16 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
 <p>The tension-face load ratio is insensitive to the compression ratio because first damage occurs in the compression-face polymer. The both-face load ratio crosses 1.0× near the default and is the least certain result in this note. Carbon by volume for the tension-face layout is half the both-face value in each row.</p>
 
 <h2>5. Discussion</h2>
-<p><b>Effect of fiber placement.</b> Continuous fiber raises stiffness wherever it is laid. At the default compression strength it raises the load to first damage only on the tension side; fiber in compression adds cost and print time and no load to first damage. Above the default the both-face layout also gains, reaching 1.5× at 50% (Table 4); the strain-based estimate in Section 3.3 (about 48%) falls near that row. In this model, continuous fiber increases strength in the fiber direction on the tension side, and stiffness elsewhere. The bending results reported in <a class="cite" href="#ref-2">[2]</a> could reflect fiber in compression; the layouts of those parts are not known.</p>
+<p><b>Effect of fiber placement.</b> Continuous fiber raises stiffness wherever it is laid. At the default compression strength it raises the load to first damage only on the tension side; fiber in compression adds cost and print time and no load to first damage. Above the default the both-face layout also gains, reaching 1.5× at 50% (Table 4); the strain-based estimate in Section 3.3 (about 48%) falls near that row. In this model, continuous fiber increases strength in the fiber direction on the tension side, and stiffness elsewhere. The bending results reported in <a class="cite" href="#ref-4">[4]</a> could reflect fiber in compression; the layouts of those parts are not known.</p>
 <p><b>Deposition rate and production value.</b> Shorter print time lowers part cost and lead time. At a fixed machine-hour rate, halving print time halves the machine share of part cost; fiber, polymer, labor and scrap are not reduced by it. A larger bead lays more volume per unit path length, and in the co-extruded bead the added volume is polymer. Whole-part time also depends on the fiber share of the print, on travel and on cut-and-restart overhead at every fiber run; none of these has been measured here. The figure of merit is whole-part time at equal performance. No published study reports it.</p>
-<p><b>Material efficiency.</b> Infused and autoclave-cured laminates are about 45 to 65% carbon by volume <a class="cite" href="#ref-4">[4]</a> (Fig. 3). The bar in Section 4.4 is 3.1% carbon by volume and gains 5.9 times the stiffness. With fiber on the tension face only, about 1.55% carbon gives 2.1 times the stiffness and 1.7 times the load to first damage (default inputs). In this model that is an incredibly low amount of added material for the stiffness and strength gained, produced without molds, vacuum bagging or curing ovens. The comparison is with the unreinforced polymer part, and fiber cost was not assessed.</p>
+<p><b>Material efficiency.</b> Infused and autoclave-cured laminates are about 45 to 65% carbon by volume <a class="cite" href="#ref-1">[1]</a> (Fig. 3). The bar in Section 4.4 is 3.1% carbon by volume and gains 5.9 times the stiffness. With fiber on the tension face only, about 1.55% carbon gives 2.1 times the stiffness and 1.7 times the load to first damage (default inputs). In this model that is an incredibly low amount of added material for the stiffness and strength gained, produced without molds, vacuum bagging or curing ovens. The comparison is with the unreinforced polymer part, and fiber cost was not assessed.</p>
 <p><b>Dynamic behavior.</b> Each fiber layout, lattice and carbon density gives a part its own stiffness and mass distribution, and therefore its own modal response, which must be computed or measured for each design. With uniform full-length fiber, as in the bar of Section 4.4, the mode shapes are unchanged and the natural frequencies scale with the square root of stiffness: about 2.4× for fiber near both faces and about 1.45× for the tension face only (carbon adds about 1% to the mass). Local fiber or lattice layouts change the mode shapes as well. Anisotropy, fiber in planar layers only, and the bond between fiber and polymer add to that work.</p>
 </div>
 
 <div class="paper">
 <figure>
   <div class="panel cmp"><div class="cmp-grid" id="cmp"></div></div>
-  <figcaption><b>Fig. 3.</b> Carbon volume fraction by process. Grey: typical ranges for each process. Navy: values from this note at the current inputs. Infused and autoclave-cured laminates are about 45 to 65% carbon <a class="cite" href="#ref-4">[4]</a>; a printed part with continuous fiber is a reinforced polymer.</figcaption>
+  <figcaption><b>Fig. 3.</b> Carbon volume fraction by process. Grey: typical ranges for each process. Navy: values from this note at the current inputs. Infused and autoclave-cured laminates are about 45 to 65% carbon <a class="cite" href="#ref-1">[1]</a>; a printed part with continuous fiber is a reinforced polymer.</figcaption>
 </figure>
 </div>
 
@@ -370,7 +370,7 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
   <li>The strand diameter (0.24 mm) is a caliper measurement of the supplied strand, not a manufacturer value; the carbon fraction within the strand (default 60%) is assumed; and the 0.24 mm fiber layer height is the author's process assumption. None of the three is published by the manufacturer.</li>
   <li>The FEA is linear-elastic, two-dimensional and plane stress, with perfectly bonded layers. It omits fiber microbuckling, delamination, interlaminar shear failure, voids, fiber waviness, transverse strength and interlayer (Z) strength. Only σ<sub>x</sub> is checked against the allowables.</li>
   <li>If the strand resin is a cured thermoset, PETG bonds to it by adhesion only; perfect bonding then overstates load transfer and compression support. Beam-theory interface shear at first damage is a few MPa, low against PETG interlayer strength, but the strand-to-PETG bond strength is unknown.</li>
-  <li>The compression allowable is transferred by stress from a high-fraction printed composite <a class="cite" href="#ref-3">[3]</a>. The both-face strength result depends on it (Table 4).</li>
+  <li>The compression allowable is transferred by stress from a high-fraction printed composite <a class="cite" href="#ref-6">[6]</a>. The both-face strength result depends on it (Table 4).</li>
   <li>Thermal residual stress from the expansion mismatch between PETG and carbon is not modeled. It places the fiber in compression before load is applied, and the tension-face layout is unsymmetric, so warpage and preload are expected.</li>
   <li>The efficiencies (85% stiffness, 55% strength) are assumed. The layered-bar stiffness was checked against transformed-section beam theory (Section 3.3); no mesh convergence study is reported.</li>
   <li>First damage is evaluated outside the load and support regions and scaled to the peak moment. Local crushing or fiber kinking under the loading nose is not captured. First damage is not final failure; the strength ratios are point predictions under the stated allowables.</li>
@@ -421,19 +421,20 @@ tbody tr.grp td{border-top:1px solid var(--rule)}
   <p>The author thanks the authors of references <a class="cite" href="#ref-7">[7]</a> and <a class="cite" href="#ref-9">[9]</a> for publishing their sections under CC BY 4.0.</p>
   <h2>References</h2>
   <ol class="refs">
-    <li id="ref-1">FibreSeek, FibreSeeker 3: the first consumer continuous fibre 3D printer, Kickstarter campaign, 17 November 2025 to 1 January 2026. <a href="https://www.kickstarter.com/projects/1763117873/fibreseeker-3-the-first-personal-continuous-fibre-3d-printer">https://www.kickstarter.com/projects/1763117873/fibreseeker-3-the-first-personal-continuous-fibre-3d-printer</a> (accessed 4 October 2026).</li>
-    <li id="ref-2">Makers101, FibreSeeker 3 review (roundup of campaign totals and reviewer tests). <a href="https://makers101.com/fibreseeker-3-review/">https://makers101.com/fibreseeker-3-review/</a> (accessed 4 October 2026). Secondary source.</li>
-    <li id="ref-3">Anisoprint, CCF composite carbon fiber 1.5K, product data as listed by Top 3D Shop (860 MPa tension, 290 MPa compression and 64 GPa for CCF 1.5K printed with PETG; effective strand diameter 0.36 ± 0.02 mm; 57 ± 7% fiber by volume within the as-supplied tow). <a href="https://top3dshop.com/product/anisoprint-ccf-composite-carbon-fiber-1-5k-750-m">https://top3dshop.com/product/anisoprint-ccf-composite-carbon-fiber-1-5k-750-m</a> (accessed 4 October 2026). Reseller copy; no Anisoprint datasheet could be retrieved.</li>
-    <li id="ref-4">D. Hull, T.W. Clyne, An Introduction to Composite Materials, 2nd ed., Cambridge University Press, Cambridge, 1996. <a href="https://doi.org/10.1017/CBO9781139170130">doi:10.1017/CBO9781139170130</a>. (Ch. 2, Fibres and matrices, pp. 9 to 38; Ch. 3, Fibre architecture, pp. 39 to 59; Ch. 4, Elastic deformation of long-fibre composites, pp. 60 to 77; Ch. 8, Strength of composites, pp. 158 to 207.)</li>
-    <li id="ref-5">P. Duran, Industrial composite strength now fits on your desk with FibreSeeker 3 for $2,699, 3D Printing Industry, 8 September 2025. <a href="https://3dprintingindustry.com/news/industrial-composite-strength-now-fits-on-your-desk-with-fibreseeker-3-for-2699-244122/">https://3dprintingindustry.com/news/industrial-composite-strength-now-fits-on-your-desk-with-fibreseeker-3-for-2699-244122/</a> (accessed 4 October 2026).</li>
-    <li id="ref-6">FibreSeek, FibreSeeker 3, product specifications, FibreSeek US web store. <a href="https://usstore.fibreseek3d.com/products/fibreseeker-3">https://usstore.fibreseek3d.com/products/fibreseeker-3</a> (accessed 4 October 2026).</li>
+    <li id="ref-1">D. Hull, T.W. Clyne, An Introduction to Composite Materials, 2nd ed., Cambridge University Press, Cambridge, 1996. <a href="https://doi.org/10.1017/CBO9781139170130">doi:10.1017/CBO9781139170130</a>. (Ch. 2, Fibres and matrices, pp. 9 to 38; Ch. 3, Fibre architecture, pp. 39 to 59; Ch. 4, Elastic deformation of long-fibre composites, pp. 60 to 77; Ch. 8, Strength of composites, pp. 158 to 207.)</li>
+    <li id="ref-2">P. Duran, Industrial composite strength now fits on your desk with FibreSeeker 3 for $2,699, 3D Printing Industry, 8 September 2025. <a href="https://3dprintingindustry.com/news/industrial-composite-strength-now-fits-on-your-desk-with-fibreseeker-3-for-2699-244122/">https://3dprintingindustry.com/news/industrial-composite-strength-now-fits-on-your-desk-with-fibreseeker-3-for-2699-244122/</a> (accessed 4 October 2026).</li>
+    <li id="ref-3">FibreSeek, FibreSeeker 3: the first consumer continuous fibre 3D printer, Kickstarter campaign, 17 November 2025 to 1 January 2026. <a href="https://www.kickstarter.com/projects/1763117873/fibreseeker-3-the-first-personal-continuous-fibre-3d-printer">https://www.kickstarter.com/projects/1763117873/fibreseeker-3-the-first-personal-continuous-fibre-3d-printer</a> (accessed 4 October 2026).</li>
+    <li id="ref-4">Makers101, FibreSeeker 3 review (roundup of campaign totals and reviewer tests). <a href="https://makers101.com/fibreseeker-3-review/">https://makers101.com/fibreseeker-3-review/</a> (accessed 4 October 2026). Secondary source.</li>
+    <li id="ref-5">FibreSeek, FibreSeeker 3, product specifications, FibreSeek US web store. <a href="https://usstore.fibreseek3d.com/products/fibreseeker-3">https://usstore.fibreseek3d.com/products/fibreseeker-3</a> (accessed 4 October 2026).</li>
+    <li id="ref-6">Anisoprint, CCF composite carbon fiber 1.5K, product data as listed by Top 3D Shop (860 MPa tension, 290 MPa compression and 64 GPa for CCF 1.5K printed with PETG; effective strand diameter 0.36 ± 0.02 mm; 57 ± 7% fiber by volume within the as-supplied tow). <a href="https://top3dshop.com/product/anisoprint-ccf-composite-carbon-fiber-1-5k-750-m">https://top3dshop.com/product/anisoprint-ccf-composite-carbon-fiber-1-5k-750-m</a> (accessed 4 October 2026). Reseller copy; no Anisoprint datasheet could be retrieved.</li>
     <li id="ref-7">M. Drilea, A. Dijkshoorn, G. Ribeiro Salomão, S. Stramigioli, G. Krijnen, Sensitivity increase of 3D printed, self-sensing, carbon fibers structures with conductive filament matrix due to flexural loading, preprint, arXiv:2512.12826 v2 (31 May 2026). <a href="https://doi.org/10.48550/arXiv.2512.12826">doi:10.48550/arXiv.2512.12826</a>. CC BY 4.0.</li>
     <li id="ref-8">Wevolver, FibreSeek FibreSeeker 3 specifications. <a href="https://www.wevolver.com/specs/fibreseek-fibreseeker-3">https://www.wevolver.com/specs/fibreseek-fibreseeker-3</a> (accessed 4 October 2026). Aggregator.</li>
     <li id="ref-9">F. Lupone, E. Padovano, C. Venezia, C. Badini, Experimental characterization and modeling of 3D printed continuous carbon fibers composites with different fiber orientation produced by FFF process, Polymers 14 (2022) 426. <a href="https://doi.org/10.3390/polym14030426">doi:10.3390/polym14030426</a>. CC BY 4.0.</li>
-    <li id="ref-10">J.G. Díaz, J. León-Becerra, A.D. Pertuz, O.A. González-Estrada, M.I. Jaramillo-Gutiérrez, Evaluation through SEM image processing of the volumetric fiber content in continuous fiber-reinforced additive manufacturing composites, Mater. Res. 24 (Suppl. 2) (2021) e20220049. <a href="https://doi.org/10.1590/1980-5373-MR-2022-0049">doi:10.1590/1980-5373-MR-2022-0049</a>. (Strand diameter 0.332 to 0.380 mm cited there from Blok et al. <a class="cite" href="#ref-12">[12]</a>.)</li>
+    <li id="ref-10">J.G. Díaz, J. León-Becerra, A.D. Pertuz, O.A. González-Estrada, M.I. Jaramillo-Gutiérrez, Evaluation through SEM image processing of the volumetric fiber content in continuous fiber-reinforced additive manufacturing composites, Mater. Res. 24 (Suppl. 2) (2021) e20220049. <a href="https://doi.org/10.1590/1980-5373-MR-2022-0049">doi:10.1590/1980-5373-MR-2022-0049</a>. (Strand diameter 0.332 to 0.380 mm cited there from Blok et al. <a class="cite" href="#ref-13">[13]</a>.)</li>
     <li id="ref-11">R. Matsuzaki, M. Ueda, M. Namiki, T.-K. Jeong, H. Asahara, K. Horiguchi, T. Nakamura, A. Todoroki, Y. Hirano, Three-dimensional printing of continuous-fiber composites by in-nozzle impregnation, Sci. Rep. 6 (2016) 23058. <a href="https://doi.org/10.1038/srep23058">doi:10.1038/srep23058</a>.</li>
-    <li id="ref-12">L.G. Blok, M.L. Longana, H. Yu, B.K.S. Woods, An investigation into 3D printing of fibre reinforced thermoplastic composites, Addit. Manuf. 22 (2018) 176-186. <a href="https://doi.org/10.1016/j.addma.2018.04.039">doi:10.1016/j.addma.2018.04.039</a>.</li>
-    <li id="ref-13">I. Papa, A.T. Silvestri, M.R. Ricciardi, V. Lopresto, A. Squillace, Effect of fibre orientation on novel continuous 3D-printed fibre-reinforced composites, Polymers 13 (2021) 2524. <a href="https://doi.org/10.3390/polym13152524">doi:10.3390/polym13152524</a>.</li>
+      <li id="ref-12">Manufacturer technical data sheets for printed specimens, ISO 527, in-plane: Prusa Research, Prusament PLA TDS v1.1 (2022) <a href="https://www.matterhackers.com/r/xFvGl8">matterhackers.com/r/xFvGl8</a> and Prusament PETG TDS v1.1 (2022) <a href="https://cdn.shopify.com/s/files/1/0658/6459/7724/files/TDS_PETG.pdf">TDS_PETG.pdf</a>; Polymaker, PolyLite PLA and PolyLite PETG <a href="https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets">wiki.polymaker.com</a>; Polymaker, PolyMide CoPA TDS V5.5 (2026) <a href="https://polymaker.com/wp-content/uploads/lana-downloads/TDS_Polymaker_PolyMide-CoPA_V5.5_2026-01-06_EN.pdf">TDS PolyMide CoPA</a>; Stratasys, FDM Nylon 12 MDS 0921a <a href="https://prod-cms.stratasys.com/siteassets/materials/materials-catalog/fdm-materials/nylon-12/mds_fdm_nylon-12_0921a.pdf">mds_fdm_nylon-12_0921a.pdf</a> (all accessed 4 October 2026).</li>
+    <li id="ref-13">L.G. Blok, M.L. Longana, H. Yu, B.K.S. Woods, An investigation into 3D printing of fibre reinforced thermoplastic composites, Addit. Manuf. 22 (2018) 176-186. <a href="https://doi.org/10.1016/j.addma.2018.04.039">doi:10.1016/j.addma.2018.04.039</a>.</li>
+    <li id="ref-14">I. Papa, A.T. Silvestri, M.R. Ricciardi, V. Lopresto, A. Squillace, Effect of fibre orientation on novel continuous 3D-printed fibre-reinforced composites, Polymers 13 (2021) 2524. <a href="https://doi.org/10.3390/polym13152524">doi:10.3390/polym13152524</a>.</li>
   </ol>
   <p>Trademarks: FibreSeek, FibreSeeker, Markforged, X7, Anisoprint, Protopasta and Kickstarter are trademarks of their respective owners.</p>
   <p>How to cite: N. Sonnentag, How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate, Sunnyday Technologies Technical Note, v1.0, 4 October 2026. https://sunn3d.com/research/printed-carbon-fiber/</p>
@@ -484,10 +485,10 @@ function feaSolve(o){
 (function(){
 const LBF=4.44822, IN=25.4;
 const G={L:101.6,b:12.7,dy:0.12,ny:52,nx:120,P:30*LBF,loadHalf:2.5};
-const PLASTIC={PLA:{E:3500,st:50,sc:65},PETG:{E:2000,st:45,sc:55},PA:{E:1700,st:60,sc:60}};
+const PLASTIC={PLA:{E:3500,st:50,sc:65,ey:0.030,eu:0.06,name:'PLA'},PETG:{E:2000,st:45,sc:55,ey:0.050,eu:0.08,name:'PETG'},PA:{E:1700,st:60,sc:60,ey:0.060,eu:0.13,name:'nylon (dry)'}}; // yield and ultimate strains: in-plane printed-specimen datasheets (Table 1)
 const CF={E:230000,s:3500,etaE:0.85,etaS:0.55};
 const AF=Math.PI/4*0.24*0.24, AB=0.70*0.24, BEADS=15, COVER=BEADS*0.7/12.7;
-const st={mat:'PETG',nf:3,vf:0.6,cf:0.34,cmode:'util'};
+const st={mat:'PETG',nf:3,vf:0.6,cf:0.34,mode:'strain'};
 const BARS=[{key:'none',name:'No fiber'},{key:'both',name:'Fiber near both faces'},{key:'bottom',name:'Fiber on tension face'}];
 
 function model(){
@@ -540,17 +541,31 @@ function turbo(t){t=Math.min(1,Math.max(0,t)); // Sunnyday utilization map: pale
   const S=[[0,[228,235,243]],[.35,[142,171,207]],[.6,[47,95,153]],[.8,[1,58,115]],[.9,[216,151,60]],[1,[179,64,47]]];
   for(let k=1;k<S.length;k++)if(t<=S[k][0]){const a=S[k-1],b=S[k],f=(t-a[0])/(b[0]-a[0]);return a[1].map((v,q)=>(v+(b[1][q]-v)*f)/255)}
   return S[S.length-1][1].map(v=>v/255);}
-document.getElementById('cbarGrad').style.background='linear-gradient(90deg,'+[0,.2,.4,.6,.8,1].map(t=>'rgb('+turbo(.1+.9*t).map(v=>Math.round(v*255)).join(',')+')').join(',')+')';
 // diverging map for signed bending stress: compression navy, zero near white, tension red
 function divmap(v){v=Math.max(-1,Math.min(1,v));const W=[244,246,248],N=[1,58,115],R=[179,64,47],t=Math.abs(v),c=v<0?N:R;return W.map((w,q)=>(w+(c[q]-w)*Math.pow(t,0.8))/255)}
-function setLegend(smax){
-  const g=document.getElementById('cbarGrad'),T=document.getElementById('cbarTitle'),lo=document.getElementById('cbarLo'),mid=document.getElementById('cbarMid'),hi=document.getElementById('cbarHi');
-  if(st.cmode==='stress'){
-    g.style.background='linear-gradient(90deg,'+[-1,-.5,0,.5,1].map(t=>'rgb('+divmap(t).map(v=>Math.round(v*255)).join(',')+')').join(',')+')';
-    T.textContent='Bending stress, MPa (fiber layers exceed scale)';lo.textContent='-'+smax.toFixed(0)+' C';mid.textContent='0';hi.textContent=smax.toFixed(0)+'+ T';
+// Turbo (Mikhailov, Google 2019): high-contrast rainbow with a smoother lightness ramp than jet
+function rainbow(t){t=Math.min(1,Math.max(0,t));
+  const r=34.61+t*(1172.33-t*(10793.56-t*(33300.12-t*(38394.49-t*14825.05))));
+  const g=23.31+t*(557.33+t*(1225.33-t*(3574.96-t*(1073.77+t*707.56))));
+  const b=27.2+t*(3211.1-t*(15327.97-t*(27814-t*(22569.18-t*6838.66))));
+  return [r,g,b].map(v=>Math.min(1,Math.max(0,v/255)));}
+// fraction of failure strain: |strain| / ultimate strain of that layer and sign (fiber: bead strength / bead modulus)
+function fracAt(M,rows,r,i,j){const e=exAt(r,i,j);const eu=rows[j]===1?(e>0?M.sbT:M.sbC)/M.Eb:M.m.eu;return Math.abs(e)/eu}
+// axial strain at an element centre from the nodal displacements
+function exAt(r,i,j){const ny=G.ny,dx=G.L/G.nx,n=(a,b)=>a*(ny+1)+b;return ((r.u[2*n(i+1,j)]-r.u[2*n(i,j)])+(r.u[2*n(i+1,j+1)]-r.u[2*n(i,j+1)]))/(2*dx)}
+function setLegend(){
+  const m=PLASTIC[st.mode==='stress'?st.mat:st.mat],fy=m.ey/m.eu,tick=document.getElementById('cbarYield');
+  document.getElementById('cbarGrad').style.background='linear-gradient(90deg,'+[0,.125,.25,.375,.5,.625,.75,.875,1].map(t=>'rgb('+rainbow(t).map(v=>Math.round(v*255)).join(',')+')').join(',')+')';
+  if(st.mode==='stress'){
+    const S=last&&last.prof?last.prof.Smax:0;
+    document.getElementById('cbarTitle').textContent='Axial stress σx, MPa (midspan peak)';
+    document.getElementById('cbarLo').textContent='-'+S.toFixed(0)+' C';document.getElementById('cbarMid').textContent='0';document.getElementById('cbarHi').textContent='+'+S.toFixed(0)+' T';
+    tick.hidden=true;document.getElementById('cbarNote').textContent='One scale for all three bars; the fiber layers carry the peak.';
   }else{
-    g.style.background='linear-gradient(90deg,'+[0,.2,.4,.6,.8,1].map(t=>'rgb('+turbo(.1+.9*t).map(v=>Math.round(v*255)).join(',')+')').join(',')+')';
-    T.textContent='Fraction of first-damage stress';lo.textContent='0';mid.textContent='0.5';hi.textContent='1.0+';
+    document.getElementById('cbarTitle').textContent='Fraction of failure strain (1.0 = ultimate)';
+    document.getElementById('cbarLo').textContent='0';document.getElementById('cbarMid').textContent='0.5';document.getElementById('cbarHi').textContent='1.0+';
+    tick.hidden=false;tick.style.left=(fy*100)+'%';
+    document.getElementById('cbarNote').textContent='Tick: '+m.name+' yield ('+fy.toFixed(2)+'). Fiber layers are brittle: yield = ultimate.';
   }
 }
 
@@ -639,7 +654,7 @@ function drawBead(cv,annotate){
 // ---------------- three.js scene ----------------
 const stage=document.getElementById('stage'),cv3=document.getElementById('three'),tagsEl=document.getElementById('tags');
 let renderer=null,scene,camera,controls,barGroup;
-const EXAG=3, OFF=[30,0,-30];
+const EXAG=3, OFF=[30,0,-30], PROF={W:22,GAP:8,VS:3};
 function initThree(){
   if(!window.THREE){document.getElementById('busy').textContent='3D view unavailable (could not load three.js). Results table still works.';return false}
   renderer=new THREE.WebGLRenderer({canvas:cv3,antialias:true});
@@ -647,12 +662,12 @@ function initThree(){
   renderer.setClearColor(0xf3f5f8,1);
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(28,1,1,2000);
-  camera.position.set(-62,22,205);
+  camera.position.set(-82,24,230);
   scene.add(new THREE.AmbientLight(0xffffff,.9));
   const dl=new THREE.DirectionalLight(0xffffff,.35);dl.position.set(-60,120,140);scene.add(dl);
   const dl2=new THREE.DirectionalLight(0xffffff,.18);dl2.position.set(80,-40,-60);scene.add(dl2);
-  if(THREE.OrbitControls){controls=new THREE.OrbitControls(camera,cv3);controls.target.set(0,0,0);controls.enablePan=false;controls.minDistance=60;controls.maxDistance=320;controls.addEventListener('change',render);controls.update()}
-  camera.lookAt(0,0,0);
+  if(THREE.OrbitControls){controls=new THREE.OrbitControls(camera,cv3);controls.target.set(-20,0,0);controls.enablePan=false;controls.minDistance=60;controls.maxDistance=320;controls.addEventListener('change',render);controls.update()}
+  camera.lookAt(-20,0,0);
   new ResizeObserver(resize).observe(stage);resize();
   return true;
 }
@@ -660,12 +675,12 @@ function resize(){if(!renderer)return;const w=stage.clientWidth,h=stage.clientHe
   camera.fov=w<560?40:28;camera.updateProjectionMatrix();render()}
 function render(){if(!renderer)return;renderer.render(scene,camera);placeTags()}
 
-function barMesh(M,rows,r,yOff,smax){
+function barMesh(M,rows,r,yOff,smax,prof){
   const nx=G.nx,ny=G.ny,dx=G.L/nx,dy=G.dy,h=ny*dy,hb=G.b/2,u=r.u;
   const P=(i,j)=>{const n=i*(ny+1)+j;return [i*dx-G.L/2+u[2*n]*EXAG, j*dy-h/2+u[2*n+1]*EXAG+yOff]};
   const pos=[],col=[];
   const quad=(a,b,c,d,cl)=>{for(const v of [a,b,c,a,c,d]){pos.push(v[0],v[1],v[2]);col.push(cl[0],cl[1],cl[2])}};
-  const C=(i,j)=>st.cmode==='stress'?divmap(r.sx[i*G.ny+j]/smax):turbo(.1+.9*util(M,rows,r.sx,i,j));
+  const C=(i,j)=>st.mode==='stress'?rainbow(.5+.5*r.sx[i*G.ny+j]/prof.Smax):rainbow(fracAt(M,rows,r,i,j));
   for(let i=0;i<nx;i++)for(let j=0;j<ny;j++){
     const cl=C(i,j),p1=P(i,j),p2=P(i+1,j),p3=P(i+1,j+1),p4=P(i,j+1);
     quad([p1[0],p1[1],hb],[p2[0],p2[1],hb],[p3[0],p3[1],hb],[p4[0],p4[1],hb],cl);
@@ -685,6 +700,24 @@ function barMesh(M,rows,r,yOff,smax){
   const tex=new THREE.CanvasTexture(tc);
   const cap=new THREE.Mesh(new THREE.PlaneGeometry(G.b,h),new THREE.MeshBasicMaterial({map:tex}));
   const l0=P(0,0);cap.position.set(l0[0]-0.02,yOff,0);cap.rotation.y=-Math.PI/2;grp.add(cap);
+  if(prof){
+    // through-depth profile of the midspan section, drawn beside the left end face (depth enlarged PROF.VS times)
+    const x0=-G.L/2-PROF.GAP-PROF.W,zf=hb+0.4,VS=PROF.VS,p2=[],c2=[],ln=[];
+    for(let j=0;j<ny;j++){
+      const sv=prof.km*(r.sx[prof.ia*ny+j]+r.sx[(nx-1-prof.ia)*ny+j])/2,ev=sv/(rows[j]?M.ExL:M.m.E);
+      const y0=(j*dy-h/2)*VS+yOff,y1=y0+dy*VS,xb=x0-sv*prof.S;
+      const c=sv>=0?[179/255,64/255,47/255]:[1/255,58/255,115/255];
+      for(const v of [[x0,y0],[xb,y0],[xb,y1],[x0,y0],[xb,y1],[x0,y1]]){p2.push(v[0],v[1],zf);c2.push(c[0],c[1],c[2])}
+      ln.push(new THREE.Vector3(x0-ev*prof.Se,(y0+y1)/2,zf+0.1));
+    }
+    const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(p2,3));g2.setAttribute('color',new THREE.Float32BufferAttribute(c2,3));
+    grp.add(new THREE.Mesh(g2,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,transparent:true,opacity:.85})));
+    const lm=new THREE.LineBasicMaterial({color:0x111417});
+    grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ln),lm));
+    grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x0,-h/2*VS+yOff,zf+0.1),new THREE.Vector3(x0,h/2*VS+yOff,zf+0.1)]),lm));
+    const fr=new THREE.LineBasicMaterial({color:0x9aa4ad});
+    grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x0-PROF.W,-h/2*VS+yOff,zf),new THREE.Vector3(x0+PROF.W,-h/2*VS+yOff,zf),new THREE.Vector3(x0+PROF.W,h/2*VS+yOff,zf),new THREE.Vector3(x0-PROF.W,h/2*VS+yOff,zf),new THREE.Vector3(x0-PROF.W,-h/2*VS+yOff,zf)]),fr));
+  }
   // supports and load nose
   const sm=new THREE.MeshLambertMaterial({color:0x6a8faa});
   for(const sx of [-G.L/2,G.L/2]){const s=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,G.b+4,24),sm);s.rotation.x=Math.PI/2;s.position.set(sx,-h/2-2.4+yOff,0);grp.add(s)}
@@ -698,6 +731,9 @@ function placeTags(){
   if(!last||!renderer)return;
   const w=stage.clientWidth,h=stage.clientHeight;
   tagsEl.innerHTML='';
+  if(last.prof){const v=new THREE.Vector3(-G.L/2-PROF.GAP-PROF.W,OFF[0]+G.ny*G.dy*PROF.VS/2+3,G.b/2).project(camera);
+    const d=document.createElement('div');d.className='tag ptag';d.style.left=((v.x+1)/2*w)+'px';d.style.top=((1-v.y)/2*h)+'px';
+    d.innerHTML='Midspan section, depth enlarged '+PROF.VS+'×<br>fill: stress (red tension, blue compression), max '+last.prof.Smax.toFixed(0)+' MPa<br>line: strain, max '+(last.prof.Emax*100).toFixed(2)+'%';tagsEl.appendChild(d);}
   BARS.forEach((B,k)=>{
     const v=new THREE.Vector3(-G.L/2,OFF[k]+G.ny*G.dy/2+3.5,G.b/2).project(camera);
     const d=document.createElement('div');d.className='tag';
@@ -715,6 +751,7 @@ function showResults(sum){
   BARS.forEach((B,k)=>{const s=sum[k],kS=b.sag/s.sag,kF=s.failP/b.failP;
     html+='<tr><td>'+B.name+'</td><td>'+fmt(s.sag/IN,3)+' in</td><td class="'+(k&&kS>1.05?'up':'')+'">'+(k?fmt(kS,1)+'×':'1×')+'</td><td class="'+(k?(kF>=1.05?'up':kF<0.95?'down':''):'')+'">'+fmt(s.failP/LBF,0)+' lbf'+(k?' ('+fmt(kF,1)+'×)':'')+'</td></tr>'});
   document.getElementById('res').innerHTML=html;
+  {const hN=document.getElementById('tNfHead');if(hN)hN.textContent=st.nf;}
   const k1=b.sag/sum[1].sag,f1=sum[1].failP/b.failP,k2=b.sag/sum[2].sag,f2=sum[2].failP/b.failP;
   document.getElementById('tBothS').textContent=k1.toFixed(1);document.getElementById('tBotS').textContent=k2.toFixed(1);document.getElementById('tBotF').textContent=f2.toFixed(1);
   {const x=f1.toFixed(1);document.getElementById('tBothV').textContent=f1<0.95?'In this model those top layers reach their estimated first-damage stress first, at a lower load than the plain bar ('+x+'×).':f1<=1.05?'In this model those top layers reach their estimated first-damage stress first, at about the same load as the plain bar ('+x+'×).':'In this model the bar reaches '+x+'× the load to first damage; the top fiber layers still reach their estimated first-damage stress first.';
@@ -756,9 +793,14 @@ async function update(){
     if(barGroup){scene.remove(barGroup);barGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}})}
     barGroup=new THREE.Group();
     // stress scale set by the unreinforced bar (largest |sigma_x| outside the contact zones); fiber layers above it saturate
-    let smax=1e-9;const dxs=G.L/G.nx,r0=out[0];for(let i=0;i<G.nx;i++){const x=(i+.5)*dxs;if(Math.abs(x-G.L/2)<6||x<4||x>G.L-4)continue;for(let j=0;j<G.ny;j++)smax=Math.max(smax,Math.abs(r0.sx[i*G.ny+j]))}
-    setLegend(smax);
-    out.forEach((r,k)=>barGroup.add(barMesh(M,M.plans[BARS[k].key],r,OFF[k],smax)));
+    let smax=1e-12;const dxs=G.L/G.nx;out.forEach(r=>{for(let i=0;i<G.nx;i++){const x=(i+.5)*dxs;if(Math.abs(x-G.L/2)<6||x<4||x>G.L-4)continue;for(let j=0;j<G.ny;j++)smax=Math.max(smax,Math.abs(exAt(r,i,j)))}});
+    // midspan section profile: nominal values at the first checked column beside the load, scaled to peak moment
+    const ia=Math.floor((G.L/2-6)/dxs-.5),aa=G.L/2-(ia+.5)*dxs,km=(G.L/2)/(G.L/2-aa);
+    let Smax=1e-9,Emax=1e-12;
+    out.forEach((r,k)=>{const rows=M.plans[BARS[k].key];for(let j=0;j<G.ny;j++){const sv=km*(r.sx[ia*G.ny+j]+r.sx[(G.nx-1-ia)*G.ny+j])/2;Smax=Math.max(Smax,Math.abs(sv));Emax=Math.max(Emax,Math.abs(sv/(rows[j]?M.ExL:M.m.E)))}});
+    const prof={ia,km,S:PROF.W/Smax,Se:PROF.W/Emax,Smax,Emax};last.prof=prof;
+    setLegend();
+    out.forEach((r,k)=>barGroup.add(barMesh(M,M.plans[BARS[k].key],r,OFF[k],prof.Emax,prof)));
     scene.add(barGroup);render();
   }
   document.getElementById('busy').hidden=true;
@@ -768,7 +810,7 @@ function bind(id,key,f,outFmt){const el=document.getElementById(id),o=document.g
   el.addEventListener('input',()=>{st[key]=f(el.value);if(o)o.textContent=outFmt(el.value);if(key==='vf'){drawBead(document.getElementById('beadMini'),false);drawBead(document.getElementById('fig1'),true);drawCompare()}clearTimeout(bind.t);bind.t=setTimeout(update,180)})}
 bind('nf','nf',v=>+v,v=>v);bind('vf','vf',v=>v/100,v=>v+'%');bind('cf','cf',v=>v/100,v=>v+'%');
 document.getElementById('mat').addEventListener('change',e=>{st.mat=e.target.value;update()});
-document.getElementById('cmode').addEventListener('change',e=>{st.cmode=e.target.value;update()});
+document.getElementById('mode').addEventListener('change',e=>{st.mode=e.target.value;update()});
 
 
 // ---------------- same-scale comparison plate ----------------

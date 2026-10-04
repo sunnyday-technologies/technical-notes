@@ -5,7 +5,8 @@ const { feaSolve } = require('./fea-solver.js');
 
 const LBF = 4.44822, IN = 25.4;
 const G = { L: 101.6, b: 12.7, dy: 0.12, ny: 52, nx: 120, P: 30 * LBF, loadHalf: 2.5 };
-const PLASTIC = { PLA: { E: 3500, st: 50, sc: 65 }, PETG: { E: 2000, st: 45, sc: 55 }, PA: { E: 1700, st: 60, sc: 60 } };
+// ey, eu: in-plane yield and ultimate strain from printed-specimen datasheets (Table 1); used by the page's strain view only
+const PLASTIC = { PLA: { E: 3500, st: 50, sc: 65, ey: 0.030, eu: 0.06 }, PETG: { E: 2000, st: 45, sc: 55, ey: 0.050, eu: 0.08 }, PA: { E: 1700, st: 60, sc: 60, ey: 0.060, eu: 0.13 } };
 const CF = { E: 230000, s: 3500, etaE: 0.85, etaS: 0.55 };
 const AF = Math.PI / 4 * 0.24 * 0.24, AB = 0.70 * 0.24, BEADS = 15, COVER = BEADS * 0.7 / 12.7;
 
