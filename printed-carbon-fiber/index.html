@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How strong is 3D printed continuous carbon fiber? Technical note v1.2</title>
+
+<style>
+/* Layout: Sunnyday technical-note format (journal style). One 760px reading column on white, wide figures to 1040px; Georgia body, Arial headings in navy, booktabs tables, numbered sections and references. Single light theme by design, like a printed journal page. */
+:root{
+  --ink:#111417; --muted:#4a5560; --rule:#c8ced4; --rule-2:#e3e7eb;
+  --navy:#013a73; --navy-2:#0f2035; --shell:#f3f5f8;
+  --warn:#b3402f;
+  --serif:Georgia,"Times New Roman",Times,serif;
+  --sans:Arial,Helvetica,"Liberation Sans",sans-serif;
+  --mono:"IBM Plex Mono",Consolas,"DejaVu Sans Mono",monospace;
+  --display:Arial,Helvetica,sans-serif; --body:Georgia,"Times New Roman",serif;
+  --polymer:#b7c0c7; --strand:#013a73; --carbon:#111417; --range:#9aa4ad; --ours:#013a73;
+  color-scheme:light;
+}
+body{background:#fff;color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.65}
+a{color:var(--navy)}
+.paper{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:1.8rem 4rem}
+.wide{max-width:1040px;margin:1.8rem auto;padding-inline:16px}
+p{margin:0 0 .95rem}
+h2{font-family:var(--sans);font-weight:700;font-size:1.22rem;color:var(--navy);margin:2.4rem 0 .7rem;text-wrap:balance}
+h3{font-family:var(--sans);font-weight:700;font-size:1.02rem;color:var(--ink);margin:1.6rem 0 .5rem}
+sup,sub{line-height:0}
+.cite{font-family:var(--sans);font-size:.92em;text-decoration:none}
+
+/* masthead and front matter */
+.mast{display:flex;justify-content:space-between;gap:.5rem 1.5rem;flex-wrap:wrap;font-family:var(--sans);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);border-bottom:3px solid var(--navy);padding-bottom:.45rem}
+.status{font-family:var(--sans);font-size:.82rem;color:var(--muted);margin:.6rem 0 1.4rem}
+.atype{font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;margin:0 0 .4rem}
+h1{font-family:var(--sans);font-weight:700;font-size:clamp(1.55rem,3.6vw,2.15rem);line-height:1.22;color:var(--ink);margin:0 0 .9rem;text-wrap:balance}
+.authors{font-family:var(--sans);font-size:1rem;margin:0 0 .25rem}
+.affil{font-family:var(--sans);font-size:.84rem;color:var(--muted);margin:0 0 1.4rem;line-height:1.5}
+.front{display:grid;grid-template-columns:13rem 1fr;gap:1.5rem;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:1rem 0;margin-bottom:1.6rem}
+.front>div{min-width:0}
+.front h4{font-family:var(--sans);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:0 0 .5rem;border-bottom:1px solid var(--rule-2);padding-bottom:.3rem}
+.info{font-family:var(--sans);font-size:.8rem;line-height:1.5;color:var(--muted)}
+.info b{display:block;color:var(--ink);margin-top:.6rem}
+.abstract p{font-size:.98rem}
+@media (max-width:640px){.front{grid-template-columns:1fr}}
+.highlights{background:var(--shell);border-left:3px solid var(--navy);padding:.8rem 1rem .8rem 1.1rem;margin:0 0 1.6rem}
+.highlights h4{font-family:var(--sans);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:0 0 .4rem}
+.highlights ul{margin:0;padding-left:1.1rem;font-family:var(--sans);font-size:.88rem;line-height:1.55}
+
+.collab{border:1px solid var(--navy);padding:.8rem 1rem;margin:0 0 1.6rem}
+.collab h4{font-family:var(--sans);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin:0 0 .4rem}
+.collab p{font-family:var(--sans);font-size:.9rem;line-height:1.55;margin:0}
+/* graphical abstract (interactive) */
+.ga{border:1px solid var(--rule);background:#fff}
+.ga-head{display:flex;justify-content:space-between;gap:.5rem 1rem;flex-wrap:wrap;font-family:var(--sans);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);padding:.6rem .9rem;border-bottom:1px solid var(--rule)}
+.ga-head span:last-child{text-transform:none;letter-spacing:0;color:var(--muted)}
+.ga-title{font-family:var(--sans);font-weight:700;font-size:1.05rem;padding:.8rem .9rem .2rem;margin:0}
+.ga-sub{font-family:var(--sans);font-size:.86rem;color:var(--muted);padding:0 .9rem .6rem;margin:0}
+.stage{position:relative;height:clamp(340px,52vw,600px);cursor:grab;background:var(--shell)}
+.stage:active{cursor:grabbing}
+.stage canvas{display:block;width:100%;height:100%}
+.tag{position:absolute;font-family:var(--sans);font-size:.74rem;color:var(--ink);background:rgba(255,255,255,.92);border:1px solid var(--rule);padding:.12rem .45rem;white-space:nowrap;pointer-events:none;transform:translate(0,-100%)}
+.tag b{color:var(--navy);font-weight:700}
+.cbar{position:absolute;right:.8rem;top:.6rem;display:grid;gap:.2rem;font-family:var(--sans);font-size:.68rem;color:var(--muted);pointer-events:none;text-align:right;background:rgba(255,255,255,.85);padding:.35rem .5rem}
+.cbar i{display:block;width:10rem;height:.55rem}
+.cbar span{display:flex;justify-content:space-between}
+.hint{position:absolute;left:.9rem;bottom:.45rem;font-family:var(--sans);font-size:.7rem;color:var(--muted);pointer-events:none}
+.busy{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--sans);font-size:.88rem;color:var(--muted);background:rgba(243,245,248,.7)}
+.try{padding:.8rem .9rem;border-top:1px solid var(--rule);display:grid;gap:.6rem}
+.try-head{font-family:var(--sans);font-size:.86rem;color:var(--ink)}
+.try-head b{color:var(--navy);text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;margin-right:.5rem}
+.try-note{font-family:var(--sans);font-size:.74rem;color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.7rem 1.4rem;font-family:var(--sans);font-size:.8rem;color:var(--ink)}
+.controls label{display:grid;gap:.3rem}
+.controls .row{display:flex;gap:.6rem;align-items:center}
+.controls input[type=range]{accent-color:var(--navy);flex:1;min-width:0}
+.controls select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--rule);padding:.3rem .4rem}
+.controls output{color:var(--navy);font-weight:700;min-width:4.5ch;text-align:right;font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.abstract-tiles{display:grid;grid-template-columns:1.15fr 1fr 1.25fr;gap:0;border-top:1px solid var(--rule)}
+.abstract-tiles>div{padding:.8rem .9rem;display:grid;gap:.5rem;align-content:start;min-width:0;border-right:1px solid var(--rule)}
+.abstract-tiles>div:last-child{border-right:0}
+.abstract-tiles h3{margin:0;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
+.abstract-tiles p{margin:0;font-family:var(--sans);font-size:.8rem;line-height:1.45;color:var(--muted)}
+.abstract-tiles canvas{width:100%;display:block;background:#000}
+@media (max-width:820px){.abstract-tiles{grid-template-columns:1fr 1fr}.abstract-tiles>div:last-child{grid-column:1/-1;border-top:1px solid var(--rule)}}
+@media (max-width:520px){.abstract-tiles{grid-template-columns:1fr}.abstract-tiles>div{border-right:0;border-top:1px solid var(--rule)}}
+
+/* tables (booktabs) */
+.tbl{overflow-x:auto;margin:1.4rem 0}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:.82rem;font-variant-numeric:tabular-nums}
+caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:.84rem;line-height:1.45;color:var(--ink);padding-bottom:.5rem}
+caption b{color:var(--ink)}
+thead th{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);font-weight:700;text-align:left;padding:.4rem .5rem;vertical-align:bottom}
+tbody td{padding:.35rem .5rem;border-bottom:1px solid var(--rule-2);vertical-align:top}
+tbody tr:last-child td{border-bottom:2px solid var(--ink)}
+td.n,th.n{text-align:right;white-space:nowrap}
+.tnote{font-family:var(--sans);font-size:.74rem;color:var(--muted);margin:.4rem 0 0}
+.res{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.78rem;font-variant-numeric:tabular-nums}
+.res th{font-weight:700;color:var(--ink);text-align:right;padding:.25rem .3rem;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
+.res th:first-child,.res td:first-child{text-align:left;white-space:normal}
+.res td{white-space:nowrap;padding:.3rem .3rem;text-align:right;border-bottom:1px solid var(--rule-2);color:var(--ink)}
+.res tr:last-child td{border-bottom:2px solid var(--ink)}
+.res td.up{color:var(--navy);font-weight:700}.res td.down{color:var(--warn);font-weight:700}
+
+/* figures */
+figure{margin:1.8rem 0;display:grid;gap:.55rem}
+figcaption{font-family:var(--sans);font-size:.84rem;line-height:1.5;color:var(--ink)}
+figcaption b{font-weight:700}
+.plate{background:#0b0d0e;line-height:0}
+.plate canvas{width:100%;display:block}
+.cmpscroll{overflow-x:auto;line-height:0;border:1px solid var(--rule)}
+.cmpscroll canvas{display:block;width:100%;min-width:640px}
+.panel{border:1px solid var(--rule);padding:1rem}
+.cmp{overflow-x:auto}
+.cmp-grid{display:grid;grid-template-columns:minmax(9.5rem,13rem) 1fr;gap:.5rem .9rem;min-width:30rem;align-items:center}
+.cmp-name{font-family:var(--sans);font-size:.84rem;line-height:1.25}
+.cmp-name small{display:block;font-size:.72rem;color:var(--muted)}
+.track{position:relative;height:1.1rem;background:repeating-linear-gradient(90deg,var(--rule-2) 0 1px,transparent 1px calc(100%/7))}
+.track i{position:absolute;top:.22rem;bottom:.22rem;background:var(--range)}
+.track i.ours{background:var(--ours);top:.1rem;bottom:.1rem}
+.axis{position:relative;height:1rem;font-family:var(--sans);font-size:.7rem;color:var(--muted)}
+.axis span{position:absolute;transform:translateX(-50%)}
+.byline{font-family:var(--sans);font-size:.74rem;color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);margin:1.2rem 0}
+.facts div{padding:.6rem .7rem;border-right:1px solid var(--rule-2);min-width:0}
+.facts div:last-child{border-right:0}
+.facts b{display:block;font-family:var(--sans);font-size:1.25rem;color:var(--navy);font-variant-numeric:tabular-nums}
+.facts span{font-family:var(--sans);font-size:.8rem;line-height:1.35;color:var(--muted)}
+@media (max-width:520px){.facts{grid-template-columns:1fr}.facts div{border-right:0;border-bottom:1px solid var(--rule-2)}}
+.eq{font-family:var(--serif);font-style:italic;text-align:center;margin:1rem 0;overflow-x:auto}
+.eq span{font-style:normal;float:right;font-family:var(--sans);font-size:.85rem;color:var(--muted)}
+
+/* back matter */
+.back{border-top:1px solid var(--rule);margin-top:2.6rem;padding-top:.6rem}
+.back h2{font-size:1rem;margin:1.4rem 0 .4rem}
+.back p,.back li{font-family:var(--sans);font-size:.84rem;line-height:1.55}
+ol.refs{padding-left:1.6rem;margin:.4rem 0}
+ol.refs li{margin:0 0 .45rem}
+ol.refs li:target{background:var(--shell)}
+ul.plain{padding-left:1.1rem;margin:.3rem 0 .9rem}
+ul.plain li{margin:0 0 .35rem}
+[hidden]{display:none!important}
+tbody tr.grp td{border-top:1px solid var(--rule)}
+</style>
+</head>
+<body>
+
+
+<div class="paper">
+  <div class="mast"><span>Sunnyday Technologies · Technical note</span><span>Materials Technology</span></div>
+  <p class="status">Version 1.2 · Technical note · Self-published · Not peer reviewed (internal review only; see Declarations)</p>
+  <p class="atype">Technical note</p>
+  <h1>How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate</h1>
+  <p class="authors">Nick Sonnentag</p>
+  <p class="affil">Sunnyday Technologies, Materials Technology (informal perspective, not an official division), Wisconsin, USA<br>ORCID <a href="https://orcid.org/0009-0002-1897-384X">0009-0002-1897-384X</a> · research@sunn3d.com</p>
+
+  <div class="front">
+    <div class="info">
+      <h4>Article info</h4>
+      <b>History</b>Published 4 October 2026<br>Revised 4 October 2026 (v1.1)<br>Revised 4 October 2026 (v1.2: corrected first-damage evaluation, sensitivity table, source corrections)
+      <b>License</b>Text and original figures: CC BY 4.0. Third-party figures: CC BY 4.0, see references <a class="cite" href="#ref-7">[7]</a> and <a class="cite" href="#ref-9">[9]</a>.
+      <b>Keywords</b>continuous fiber reinforcement; fused filament fabrication; co-extrusion; carbon fiber; fiber volume fraction; finite element analysis; flexural stiffness; PETG
+    </div>
+    <div class="abstract">
+      <h4>Abstract</h4>
+      <p>Desktop printers that co-extrude a continuous carbon fiber strand inside a thermoplastic bead have drawn wide attention, including a Kickstarter campaign that closed with US$4.70 million pledged <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-2">[2]</a>. This note quantifies what a printed part contains and what the fiber does in bending. A 0.24 mm strand in a 0.70 × 0.24 mm bead occupies 26.9% of the bead section; at an assumed 60% carbon within the strand, carbon is 16% of the bead. At one scale, published sections show a larger Markforged strand (0.33 to 0.38 mm) with 23 to 37% carbon, measured by image analysis of printed parts and by thermogravimetric analysis of the tow. A layered two-dimensional finite element model of a 4 in (101.6 mm) PETG bar in three-point bending, at 3.1% carbon by volume, predicts a 5.9-fold stiffness increase with fiber near both faces and no gain in load to first damage (1.0×) when fiber compression strength is taken as 34% of tension. Fiber on the tension face only, with half the fiber, gives 2.1× stiffness and 1.7× load to first damage. The both-face strength result depends on the compression assumption (0.8× at 25%, 1.5× at 50%); the tension-face result stays at 1.7×. In this model, fiber placement determines whether continuous fiber increases the load to first damage. With uniform full-length fiber, natural frequencies rise roughly with the square root of the stiffness ratio; other layouts change mode shapes and must be analyzed per design. All results are model estimates pending polished sections and load-frame tests.</p>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <h4>Highlights</h4>
+    <ul>
+      <li>A 0.24 mm strand is 27% of a 0.70 × 0.24 mm bead; a printed part is mostly polymer.</li>
+      <li>Per unit path length the bead has 1.5× the Markforged bead section, mostly polymer.</li>
+      <li>Fiber near both faces: 5.9× stiffness, 1.0× load to first damage at 34% compression.</li>
+      <li>Fiber on the tension face only: 2.1× stiffness, 1.7× load to first damage.</li>
+      <li>The tension-face strength gain stays at 1.7× for compression ratios of 25 to 100%.</li>
+    </ul>
+  </div>
+  <div class="collab">
+    <h4>Call for university collaboration</h4>
+    <p>We are actively working with universities to quantify the strength of these materials. Universities interested in collaborative work are welcome: we provide printed material coupons for evaluation, and custom printing to evaluate the auxetic fiber lattices we are developing, under a written agreement. Contact <a href="mailto:research@sunn3d.com">research@sunn3d.com</a> (see Section 9).</p>
+  </div>
+</div>
+
+<div class="wide">
+<section class="ga" aria-label="Graphical abstract">
+  <div class="ga-head"><span>Graphical abstract (interactive)</span><span>Drag to rotate · deflection shown 3× actual</span></div>
+  <p class="ga-title">Same 4 in PETG bar, same 30 lbf at midspan: no fiber, fiber near both faces, fiber on the tension face only.</p>
+  <p class="ga-sub">Color: stress as a fraction of each layer's estimated first-damage stress. Blue is low; red is at or above first damage.</p>
+  <div class="stage" id="stage">
+    <canvas id="three" aria-label="3D finite element view of three bars under three-point bending, colored by stress as a fraction of first-damage stress."></canvas>
+    <div id="tags"></div>
+    <div class="cbar"><span>Fraction of first-damage stress</span><i id="cbarGrad"></i><span><span>0</span><span>0.5</span><span>1.0+</span></span></div>
+    <div class="busy" id="busy">Solving the FEA…</div>
+  </div>
+  <div class="try">
+    <div class="try-head"><b>Inputs</b>Change the polymer or the fiber; the model solves again in your browser and updates Table 3 and Section 4.4.</div>
+    <div class="controls" id="controls">
+      <label for="mat">Polymer
+        <select id="mat"><option value="PETG" selected>PETG (clear)</option><option value="PLA">PLA</option><option value="PA">Nylon (PA)</option></select>
+      </label>
+      <label for="nf">Fiber layers per face (1 to 4)
+        <span class="row"><input id="nf" type="range" min="1" max="4" step="1" value="3"><output id="nfOut" for="nf">3</output></span>
+      </label>
+      <label for="vf">Carbon within the strand (assumed; 30 to 85%; above about 70% exceeds what impregnated tows achieve in practice)
+        <span class="row"><input id="vf" type="range" min="30" max="85" step="1" value="60"><output id="vfOut" for="vf">60%</output></span>
+      </label>
+      <label for="cf">Fiber compression strength, % of tension (25 to 100%)
+        <span class="row"><input id="cf" type="range" min="25" max="100" step="1" value="34"><output id="cfOut" for="cf">34%</output></span>
+      </label>
+    </div>
+    <div class="try-note">Defaults: PETG, 3 layers per face, 60% carbon within the strand (assumed), compression at 34% of tension (290/860 MPa) <a class="cite" href="#ref-3">[3]</a>.</div>
+  </div>
+  <div class="abstract-tiles">
+    <div>
+      <h3>(a) Section, end view</h3>
+      <canvas id="xsec" aria-label="To-scale cross-section of the bar with fiber near both faces."></canvas>
+      <p>To scale, <span class="tMat">clear PETG</span>. Black: carbon strands in 0.24 mm fiber layers 0.24 to 1.20 mm from each face. Walls are unreinforced.</p>
+    </div>
+    <div>
+      <h3>(b) One bead</h3>
+      <canvas id="beadMini" aria-label="Simulated micrograph of one fiber bead."></canvas>
+      <p>0.24 mm strand in a 0.70 × 0.24 mm bead: 27% strand, 73% polymer.</p>
+    </div>
+    <div>
+      <h3>(c) Results at 30 lbf (Table 3)</h3>
+      <table class="res" id="res" aria-live="polite"></table>
+      <p>Layered 2D FEA estimate. Not a test result.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="paper">
+<h2>1. Introduction</h2>
+<p>Many polymer parts are almost strong enough: they meet most requirements but fall short on stiffness or strength at one location. For years I have asked whether a single strand of carbon fiber, placed where the load runs, would supply the small increment of strength and stiffness that enables the design. I strongly believed it could.</p>
+<p>This requires fiber placed by the design, strand by strand, rather than a mask or patch of fiber laid over a region. Each strand is a towpreg: a bundle (tow) of carbon filaments pre-impregnated with a resin whose chemistry, thermoset or thermoplastic, FibreSeek does not publish. Standard-modulus carbon fiber is linear-elastic to failure at about 1.5 to 2% strain, with no yielding <a class="cite" href="#ref-4">[4]</a>. It should be placed only where the load requires it.</p>
+<p>Desktop co-extrusion printers, reported at under US$3,000 <a class="cite" href="#ref-5">[5]</a>, allow this to be tested outside an industrial laboratory. The FibreSeeker 3 (FibreSeek) Kickstarter campaign closed on 1 January 2026 with US$4,698,825 pledged by 1,539 backers against a US$50,000 goal <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-2">[2]</a>, with a price of US$2,699 reported at announcement in September 2025 <a class="cite" href="#ref-5">[5]</a>; current pricing may differ. Its headline strength, up to 900 MPa (130 ksi) <a class="cite" href="#ref-6">[6]</a>, is given without a load direction. Comparable published values for printed continuous carbon, such as 860 MPa <a class="cite" href="#ref-3">[3]</a>, are tensile properties in the fiber direction. Reviewer results summarized in <a class="cite" href="#ref-2">[2]</a> varied by load type. These are not controlled tests.</p>
+<p>This note answers three questions. (1) What fraction of a printed bead is carbon? (2) How does the bead compare, at the same scale, with published sections from other continuous-fiber platforms? (3) Where must fiber be placed to raise stiffness and load to first damage in bending? Fiber cost, print time and part performance all depend on where, and how much, fiber is laid.</p>
+
+<h2>2. Process background</h2>
+<p>In co-extrusion, the strand passes through a heated composite nozzle together with metered thermoplastic and is pressed onto the previous layer as one bead. Anisoprint <a class="cite" href="#ref-7">[7]</a> and, per its specification, the FibreSeeker 3 <a class="cite" href="#ref-6">[6]</a>, <a class="cite" href="#ref-8">[8]</a> co-extrude the strand with thermoplastic. Markforged prints a pre-impregnated fiber filament without added polymer <a class="cite" href="#ref-9">[9]</a>. On published systems a cutter upstream of the nozzle cuts the strand before the path ends, so each fiber run has a minimum length set by the cutter-to-tip distance, and the strand cannot follow corners tighter than its minimum bend radius. The FibreSeeker 3 values of both are not published. On these desktop platforms fiber is laid only in planar layers. In the model of Section 3.3, walls, infill and skins are unreinforced; some platforms also lay fiber as concentric rings inside walls.</p>
+<p>For the FibreSeeker 3 this note takes a 0.24 mm (0.0094 in) strand and a 0.70 mm (0.028 in) composite nozzle. The nozzle diameter is published <a class="cite" href="#ref-6">[6]</a>; the strand diameter was measured by the author with a digital caliper at several locations along the supplied strand, and the readings were consistent at 0.24 mm. This note assumes fiber layers 0.24 mm tall, equal to two 0.12 mm (0.0047 in) polymer layers. The 0.24 mm fiber layer height is the author's process assumption, not a published FibreSeeker 3 setting. It is sized so that the strand is not flattened by design; any layer-height or overfill error will flatten it.</p>
+
+<h2>3. Methods</h2>
+<h3>3.1 Bead composition</h3>
+<p>The strand area and bead area follow from the dimensions above, with the bead idealized as a rectangle of width <i>w</i> and height <i>h</i>:</p>
+<p class="eq">A<sub>s</sub> = π d<sup>2</sup>/4 = 0.0452 mm<sup>2</sup>, &nbsp; A<sub>b</sub> = w h = 0.70 × 0.24 = 0.168 mm<sup>2</sup>, &nbsp; φ<sub>s</sub> = A<sub>s</sub>/A<sub>b</sub> = 0.269 <span>(1)</span></p>
+<p>The carbon fraction of the bead is φ<sub>c</sub> = φ<sub>s</sub> V<sub>s</sub>, where V<sub>s</sub> is the carbon volume fraction within the strand. FibreSeek does not publish V<sub>s</sub>. The default, 60%, is an assumption; the model allows 30 to 85%. The upper bound, 85%, is 1,000 filaments of 7 µm in a 0.24 mm strand. It approaches the hexagonal packing limit (90.7%) and exceeds the roughly 70% that impregnated tows achieve in practice, so it is a geometric bound only. A 1,000-filament tow of 8.6 µm filaments, as measured in Markforged strand <a class="cite" href="#ref-10">[10]</a>, would not fit in 0.24 mm. A bead with semicircular ends (stadium, 0.156 mm<sup>2</sup>) gives φ<sub>s</sub> = 0.291. Fig. 1 shows the bead drawn to scale, with 7 µm filaments <a class="cite" href="#ref-4">[4]</a> placed on a randomly jittered hexagonal lattice at V<sub>s</sub>.</p>
+
+<h3>3.2 Same-scale comparison with published sections</h3>
+<p>Polished sections of Markforged material <a class="cite" href="#ref-9">[9]</a> and a co-extruded Anisoprint strand <a class="cite" href="#ref-7">[7]</a>, both published under CC BY 4.0, were cropped and rescaled to a common scale. Scales were set from scale bars measured in pixels: 40 µm = 29 px (ref. <a class="cite" href="#ref-9">[9]</a>, Fig. 4a); 50 µm = 17.5 px (ref. <a class="cite" href="#ref-9">[9]</a>, Fig. 6b, consistent with its 125 µm layer spacing; ±0.5 px is ±3% in scale); 1,000 µm = 1,275 px (ref. <a class="cite" href="#ref-7">[7]</a>, Fig. 9). Modeled sections were drawn at the same scale.</p>
+
+<h3>3.3 Finite element model</h3>
+<p>A bar 101.6 mm (4 in) between supports, 12.7 mm (1/2 in) wide and 6.24 mm (about 1/4 in) thick (52 layers of 0.12 mm) was loaded in three-point bending with 133 N (30 lbf) spread over 5 mm at midspan. The span-to-depth ratio, 16.3, matches ASTM D790. The model is linear-elastic, two-dimensional plane stress, with 120 × 52 four-node bilinear elements (2 × 2 Gauss integration) and layers perfectly bonded. On the unreinforced bar the solver agrees with Euler-Bernoulli beam theory within 1%, so shear locking is not significant at 52 elements through the thickness. This verifies the solver; it does not validate the model against tests. An independent transformed-section beam check with Timoshenko shear gives stiffness ratios of 5.99 (fiber near both faces) and 2.08 (tension face only), against 5.9 and 2.1 from the FEA, and a hand calculation for the plain bar gives 32.8 lbf to first damage, against 32 lbf from the FEA.</p>
+<p>Each face carries two 0.12 mm polymer skin layers, then three 0.24 mm fiber layers separated by 0.12 mm polymer layers, so fiber lies 0.24 to 1.20 mm from each face. Each fiber layer holds 15 beads of 0.70 mm across 10.5 mm, with unreinforced walls about 1.1 mm wide at both edges, and is homogenized by the rule of mixtures <a class="cite" href="#ref-4">[4]</a> (Table 1). The model takes each fiber layer as 15 straight runs along the full bar, each cut individually, with no overlap between beads. Three layouts were solved: no fiber; three fiber layers near each face; three fiber layers near the tension face only.</p>
+<p>The stiffness and strength efficiencies of the fiber layer (85% and 55%) are model assumptions. As a check of the material rules, Matsuzaki et al. measured 19.5 GPa and 185 MPa in tension for 6.6% continuous carbon in PLA <a class="cite" href="#ref-11">[11]</a>; the same rules predict about 16 GPa and 130 MPa, 17% and 30% below measurement, so the model is conservative in tension. No compression or flexure data were checked. Matsuzaki et al. impregnated a dry tow with PLA in the nozzle, so the check covers the mixing rules but not the strand-to-polymer interface used here.</p>
+<p>Damage is assessed per element as the axial stress σ<sub>x</sub> divided by an estimated first-damage stress, in tension or compression; other stress components are not checked. Elements within 6 mm of midspan and 4 mm of the supports are excluded to avoid contact stresses. Because the bending moment varies linearly along the span, each checked element is scaled to the peak midspan moment, so the reported load corresponds to the peak moment. The load to first damage is the load at which the first element reaches 1.0. For the plain bar this gives 32 lbf against about 33 lbf from beam theory. Local crushing or kinking under the loading nose is not captured.</p>
+<p>Printed continuous carbon is much weaker in compression than in tension. The default compression strength, 34% of tension, is the ratio of one supplier's published printed-composite values (290 MPa compression, 860 MPa tension) <a class="cite" href="#ref-3">[3]</a>. Those values are for a cured-thermoset strand printed in PETG and may not transfer to a strand of different resin chemistry. Transferring the allowable by strain instead of by stress (290 MPa / 64 GPa = 0.45%) gives about 48% of tension for the bead. Table 4 gives results from 25 to 100%.</p>
+
+<div class="tbl"><table>
+  <caption><b>Table 1.</b> Model inputs. Polymer values are typical published values; printed values vary with raster, layer height and moisture. Bead values are at the default 60% carbon within the strand.</caption>
+  <thead><tr><th>Material</th><th class="n">Modulus (GPa)</th><th class="n">Tension (MPa)</th><th class="n">Compression (MPa)</th><th>Basis</th></tr></thead>
+  <tbody>
+    <tr><td>PETG</td><td class="n">2.0</td><td class="n">45</td><td class="n">55</td><td>Typical</td></tr>
+    <tr><td>PLA</td><td class="n">3.5</td><td class="n">50</td><td class="n">65</td><td>Typical</td></tr>
+    <tr><td>Nylon (PA), moisture state not specified</td><td class="n">1.7</td><td class="n">60</td><td class="n">60</td><td>Typical; PA absorbs 2 to 3% water, which lowers modulus and strength</td></tr>
+    <tr><td>Carbon fiber</td><td class="n">230</td><td class="n">3,500</td><td class="n">n/a</td><td>Standard modulus <a class="cite" href="#ref-4">[4]</a></td></tr>
+    <tr><td>Fiber bead, along fiber (PETG)</td><td class="n">33</td><td class="n">310</td><td class="n">105</td><td>Rule of mixtures; 85% stiffness and 55% strength efficiency (assumed); compression 34% of tension <a class="cite" href="#ref-3">[3]</a></td></tr>
+  </tbody>
+</table></div>
+
+<h2>4. Results</h2>
+<h3>4.1 Bead composition</h3>
+<p>The strand occupies 26.9% of the bead and polymer the remaining 73.1%. At the assumed strand carbon fraction, carbon is the following share of the bead:</p>
+<div class="facts">
+  <div><b>26.9%</b><span>strand share of the bead (Eq. 1)</span></div>
+  <div><b>73.1%</b><span>polymer added around the strand</span></div>
+  <div><b id="tBeadC">~16%</b><span>carbon share of the bead, at <span id="tVf">60</span>% carbon within the strand (assumed)</span></div>
+</div>
+<p>The polymer added at the nozzle is 0.1228 mm<sup>2</sup> per unit length, or 0.051 mm of 1.75 mm feedstock filament per mm of strand laid. The polymer flanks the strand on both sides. In the idealized 0.24 mm layer the strand touches the top and bottom of the bead, so cover above and below comes from the adjacent polymer layers. Encapsulation and bonding must be confirmed by sectioning.</p>
+</div>
+
+<div class="paper">
+<figure>
+  <div class="plate"><canvas id="fig1" role="img" aria-label="Simulated polished cross-section of one printed fiber bead, carbon filaments shown as bright dots."></canvas></div>
+  <figcaption><b>Fig. 1.</b> Simulated polished section of one 0.70 × 0.24 mm bead, to scale (illustrative). Bright dots: 7 µm carbon filaments within the 0.24 mm strand. Grey: polymer. Strand shape and position in a printed bead have not been measured.</figcaption>
+</figure>
+</div>
+
+<div class="paper">
+<h3>4.2 Comparison with published sections</h3>
+<p>Fig. 2 places the bead next to published sections at one scale. The Markforged strand measures 0.33 to 0.38 mm (0.013 to 0.015 in) <a class="cite" href="#ref-10">[10]</a>, <a class="cite" href="#ref-12">[12]</a> and is described as about 1,000 carbon filaments in a polyamide matrix <a class="cite" href="#ref-9">[9]</a>. Image analysis of printed parts gives 22.6 to 28.7% carbon by volume <a class="cite" href="#ref-10">[10]</a>; thermogravimetric analysis (TGA) of the fiber tow gives 37.4% by volume, a value for the tow, not for the printed laminate <a class="cite" href="#ref-9">[9]</a>. The image-analysis values are below the 34 to 71% that 1,000 filaments of 7 to 8.8 µm would give in that strand <a class="cite" href="#ref-10">[10]</a>, so they are best read as printed-section fractions. A higher value, 69%, is reported for printed Markforged laminates in <a class="cite" href="#ref-13">[13]</a>; the difference in method is not resolved here. Markforged prints the strand without added polymer, and printing flattens it into 0.125 mm (0.0049 in) layers about 0.9 mm wide, with about 11% voids measured by image analysis of polished sections in ImageJ <a class="cite" href="#ref-9">[9]</a>. The strand area, 0.086 to 0.113 mm<sup>2</sup>, is about equal to that bead section, so the Markforged bead is essentially all strand. The Anisoprint CCF strand, a 1.5K tow pre-impregnated with a cured thermoset resin, is 0.36 mm, with about 57% carbon within the as-supplied tow (reseller listing) <a class="cite" href="#ref-3">[3]</a>, and is co-extruded in 0.3 mm layers with large voids around the strand <a class="cite" href="#ref-7">[7]</a>. The 0.24 mm strand is the smallest of the three (Table 2).</p>
+</div>
+
+<div class="wide">
+<figure>
+  <div class="cmpscroll"><canvas id="cmpCanvas" role="img" aria-label="Same-scale comparison: a Markforged carbon strand, two Anisoprint CCF strands, a modeled 0.24 mm bead, a Markforged printed section and modeled 0.24 mm fiber layers."></canvas></div>
+  <figcaption><b>Fig. 2.</b> Sections at one scale (bar: 500 µm, 0.020 in). (A) Markforged strand before printing, ref. <a class="cite" href="#ref-9">[9]</a>, Fig. 4a. (B) Two Anisoprint CCF strands in a conductive PLA (Protopasta) region within PETG, ref. <a class="cite" href="#ref-7">[7]</a>, Fig. 9. (C) 0.24 mm strand in a 0.70 × 0.24 mm bead (model). (D) Printed Markforged 0° section, ref. <a class="cite" href="#ref-9">[9]</a>, Fig. 6b; red dashed lines in the original mark layer and bead boundaries. (E) 0.24 mm fiber layers over the same field as D (model, no voids). A, B and D are measured; C and E are idealized. Third-party images CC BY 4.0, cropped and rescaled to a common scale, panel letters added, original labels retained.</figcaption>
+</figure>
+</div>
+
+<div class="paper">
+<div class="tbl"><table>
+  <caption><b>Table 2.</b> Strand, bead and deposition data by platform. Values are published unless marked.</caption>
+  <thead><tr><th>Platform</th><th class="n">Strand (mm)</th><th>Tow</th><th>Carbon in strand (vol%)</th><th>Added polymer at nozzle</th><th class="n">Bead w × h (mm)</th><th class="n">Bead area (mm²)</th><th>Fiber deposition rate</th></tr></thead>
+  <tbody>
+    <tr><td>Markforged</td><td class="n">0.33 to 0.38 <a class="cite" href="#ref-10">[10]</a>, <a class="cite" href="#ref-12">[12]</a></td><td>About 1,000 filaments <a class="cite" href="#ref-9">[9]</a></td><td>22.6 to 28.7 <a class="cite" href="#ref-10">[10]</a> (printed sections, image analysis); 37.4 <a class="cite" href="#ref-9">[9]</a> (tow, TGA)</td><td>None <a class="cite" href="#ref-9">[9]</a></td><td class="n">About 0.9 × 0.125 <a class="cite" href="#ref-9">[9]</a></td><td class="n">0.113</td><td>2.39 cm³/h, print setting, X7 <a class="cite" href="#ref-13">[13]</a></td></tr>
+    <tr><td>Anisoprint</td><td class="n">0.36 ± 0.02 <a class="cite" href="#ref-3">[3]</a></td><td>1.5K <a class="cite" href="#ref-3">[3]</a></td><td>57 ± 7 <a class="cite" href="#ref-3">[3]</a> (as-supplied tow, reseller listing)</td><td>Yes <a class="cite" href="#ref-7">[7]</a></td><td class="n">0.78 × 0.3, from <a class="cite" href="#ref-7">[7]</a> Fig. 9</td><td class="n">0.234</td><td>Not reported</td></tr>
+    <tr><td>FibreSeeker 3 (this note)</td><td class="n">0.24 (measured, caliper)</td><td>Not published</td><td>60 (assumed)</td><td>Yes <a class="cite" href="#ref-6">[6]</a>, <a class="cite" href="#ref-8">[8]</a></td><td class="n">0.70 × 0.24 (0.24 mm layer assumed)</td><td class="n">0.168</td><td>20 cm³/h, specification, basis not stated <a class="cite" href="#ref-6">[6]</a></td></tr>
+  </tbody>
+</table></div>
+
+<h3>4.3 Deposition rate</h3>
+<p>Per unit path length, the 0.70 × 0.24 mm bead has 1.49 times the section of the 0.9 × 0.125 mm Markforged bead. The difference is added polymer: the Markforged bead is essentially all strand, and the FibreSeeker 3 bead is 73% polymer. Because a 0.70 mm bead covers less width than a 0.9 mm bead, filling a layer of given width takes 1.29 times the path length.</p>
+<p>Carbon per unit path length cannot be ranked from published data. The Markforged strand carries 0.019 to 0.042 mm<sup>2</sup> of carbon (0.086 to 0.113 mm<sup>2</sup> at 22.6 to 37.4%), and a 0.24 mm strand carries 0.014 to 0.038 mm<sup>2</sup> at 30 to 85% (0.027 mm<sup>2</sup> at the assumed 60%). The ranges overlap.</p>
+<p>The published rates are 2.39 cm³/h, a print setting on a Markforged X7 <a class="cite" href="#ref-13">[13]</a>, and 20 cm³/h in the FibreSeeker 3 specification <a class="cite" href="#ref-6">[6]</a>, whose basis (bead volume, strand volume or nozzle capacity) is not stated. At 0.168 mm<sup>2</sup> the specification implies about 33 mm/s head speed. The two values were obtained differently and are not directly comparable; bead size alone accounts for a factor of 1.49.</p>
+
+<h3>4.4 Flexural stiffness and first damage</h3>
+<p>The bar with fiber near both faces is <span id="tBarC">3.1</span>% carbon by volume; about 19% of the bar volume is fiber bead, placed near the outer surfaces. Results for the three layouts are given in the graphical abstract and Table 3.</p>
+<p><b>Fiber near both faces.</b> Stiffness rises <span id="tBothS">5.9</span>-fold. The top fiber layers are in compression; the model takes fiber compression strength as <span id="tCf">34</span>% of tension. <span id="tBothV">In this model those top layers reach their estimated first-damage stress first, at about the same load as the plain bar (1.0×).</span> <span id="tBothV2">This layout increases stiffness but not the load to first damage.</span></p>
+<p><b>Fiber on the tension face only.</b> With half the fiber, stiffness rises <span id="tBotS">2.1</span>-fold and the load to first damage <span id="tBotF">1.7</span>-fold. First damage moves to the polymer on the compression face. A fourth tension-face layer raises the load to first damage from 1.7× to 1.8×, because the compression-face polymer governs.</p>
+<p>First damage is polymer yield in the plain and tension-face bars and fiber compressive failure in the both-face bar. Equal ratios therefore do not mean equal ultimate strength. Polymer yield is a conservative first-damage event relative to ultimate load.</p>
+<p class="tnote"><b>Table 3</b> is the results table in the graphical abstract, panel (c). It updates with the inputs. Default case: PETG, 3 layers per face, 60% carbon within the strand, compression at 34% of tension.</p>
+<p>Table 4 gives the sensitivity of the two fiber layouts to the inputs that are assumed. Each row changes one input from the defaults. Stiffness does not depend on the compression ratio in this linear model.</p>
+
+<div class="tbl"><table>
+  <caption><b>Table 4.</b> Sensitivity at 30 lbf. Stiffness ratio and load to first damage relative to the unreinforced bar of the same polymer. Defaults: PETG, 3 layers per face, 60% carbon within the strand, compression 34% of tension.</caption>
+  <thead><tr><th>Input varied</th><th>Value</th><th class="n">Carbon, both faces (vol%)</th><th class="n">Both faces: stiffness</th><th class="n">Both faces: load to first damage</th><th class="n">Tension face: stiffness</th><th class="n">Tension face: load to first damage</th></tr></thead>
+  <tbody>
+    <tr><td>Compression, % of tension</td><td>25%</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">0.8×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>34% (default)</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">1.0×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>50%</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">1.5×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>70%</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">2.1×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>100%</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">2.3×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr class="grp"><td>Carbon within the strand</td><td>30%</td><td class="n">1.5</td><td class="n">3.5×</td><td class="n">0.6×</td><td class="n">1.8×</td><td class="n">1.1×</td></tr>
+    <tr><td></td><td>60% (default)</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">1.0×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>85% (geometric bound)</td><td class="n">4.4</td><td class="n">7.8×</td><td class="n">1.4×</td><td class="n">2.2×</td><td class="n">1.9×</td></tr>
+    <tr class="grp"><td>Polymer</td><td>PETG (default; no fiber 0.224 in, 32 lbf)</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">1.0×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>PLA (no fiber 0.128 in, 35 lbf)</td><td class="n">3.1</td><td class="n">3.9×</td><td class="n">1.0×</td><td class="n">1.8×</td><td class="n">1.9×</td></tr>
+    <tr><td></td><td>Nylon (no fiber 0.263 in, 42 lbf)</td><td class="n">3.1</td><td class="n">6.7×</td><td class="n">0.8×</td><td class="n">2.1×</td><td class="n">1.2×</td></tr>
+    <tr class="grp"><td>Fiber layers per face</td><td>3 (default)</td><td class="n">3.1</td><td class="n">5.9×</td><td class="n">1.0×</td><td class="n">2.1×</td><td class="n">1.7×</td></tr>
+    <tr><td></td><td>4</td><td class="n">4.1</td><td class="n">6.6×</td><td class="n">1.2×</td><td class="n">2.1×</td><td class="n">1.8×</td></tr>
+  </tbody>
+</table></div>
+<p>The tension-face load ratio is insensitive to the compression ratio because first damage occurs in the compression-face polymer. The both-face load ratio crosses 1.0× near the default and is the least certain result in this note. Carbon by volume for the tension-face layout is half the both-face value in each row.</p>
+
+<h2>5. Discussion</h2>
+<p><b>Effect of fiber placement.</b> Continuous fiber raises stiffness wherever it is laid. At the default compression strength it raises the load to first damage only on the tension side; fiber in compression adds cost and print time and no load to first damage. Above the default the both-face layout also gains, reaching 1.5× at 50% (Table 4); the strain-based estimate in Section 3.3 (about 48%) falls near that row. In this model, continuous fiber increases strength in the fiber direction on the tension side, and stiffness elsewhere. The bending results reported in <a class="cite" href="#ref-2">[2]</a> could reflect fiber in compression; the layouts of those parts are not known.</p>
+<p><b>Deposition rate and production value.</b> Shorter print time lowers part cost and lead time. At a fixed machine-hour rate, halving print time halves the machine share of part cost; fiber, polymer, labor and scrap are not reduced by it. A larger bead lays more volume per unit path length, and in the co-extruded bead the added volume is polymer. Whole-part time also depends on the fiber share of the print, on travel and on cut-and-restart overhead at every fiber run; none of these has been measured here. The figure of merit is whole-part time at equal performance. No published study reports it.</p>
+<p><b>Material efficiency.</b> Infused and autoclave-cured laminates are about 45 to 65% carbon by volume <a class="cite" href="#ref-4">[4]</a> (Fig. 3). The bar in Section 4.4 is 3.1% carbon by volume and gains 5.9 times the stiffness. With fiber on the tension face only, about 1.55% carbon gives 2.1 times the stiffness and 1.7 times the load to first damage (default inputs). In this model that is an incredibly low amount of added material for the stiffness and strength gained, produced without molds, vacuum bagging or curing ovens. The comparison is with the unreinforced polymer part, and fiber cost was not assessed.</p>
+<p><b>Dynamic behavior.</b> Each fiber layout, lattice and carbon density gives a part its own stiffness and mass distribution, and therefore its own modal response, which must be computed or measured for each design. With uniform full-length fiber, as in the bar of Section 4.4, the mode shapes are unchanged and the natural frequencies scale with the square root of stiffness: about 2.4× for fiber near both faces and about 1.45× for the tension face only (carbon adds about 1% to the mass). Local fiber or lattice layouts change the mode shapes as well. Anisotropy, fiber in planar layers only, and the bond between fiber and polymer add to that work.</p>
+</div>
+
+<div class="paper">
+<figure>
+  <div class="panel cmp"><div class="cmp-grid" id="cmp"></div></div>
+  <figcaption><b>Fig. 3.</b> Carbon volume fraction by process. Grey: typical ranges for each process. Navy: values from this note at the current inputs. Infused and autoclave-cured laminates are about 45 to 65% carbon <a class="cite" href="#ref-4">[4]</a>; a printed part with continuous fiber is a reinforced polymer.</figcaption>
+</figure>
+</div>
+
+<div class="paper">
+<h2>6. Limitations</h2>
+<ul class="plain">
+  <li>All results are model estimates. No specimen was printed, sectioned or tested for this note.</li>
+  <li>The strand diameter (0.24 mm) is a caliper measurement of the supplied strand, not a manufacturer value; the carbon fraction within the strand (default 60%) is assumed; and the 0.24 mm fiber layer height is the author's process assumption. None of the three is published by the manufacturer.</li>
+  <li>The FEA is linear-elastic, two-dimensional and plane stress, with perfectly bonded layers. It omits fiber microbuckling, delamination, interlaminar shear failure, voids, fiber waviness, transverse strength and interlayer (Z) strength. Only σ<sub>x</sub> is checked against the allowables.</li>
+  <li>If the strand resin is a cured thermoset, PETG bonds to it by adhesion only; perfect bonding then overstates load transfer and compression support. Beam-theory interface shear at first damage is a few MPa, low against PETG interlayer strength, but the strand-to-PETG bond strength is unknown.</li>
+  <li>The compression allowable is transferred by stress from a high-fraction printed composite <a class="cite" href="#ref-3">[3]</a>. The both-face strength result depends on it (Table 4).</li>
+  <li>Thermal residual stress from the expansion mismatch between PETG and carbon is not modeled. It places the fiber in compression before load is applied, and the tension-face layout is unsymmetric, so warpage and preload are expected.</li>
+  <li>The efficiencies (85% stiffness, 55% strength) are assumed. The layered-bar stiffness was checked against transformed-section beam theory (Section 3.3); no mesh convergence study is reported.</li>
+  <li>First damage is evaluated outside the load and support regions and scaled to the peak moment. Local crushing or fiber kinking under the loading nose is not captured. First damage is not final failure; the strength ratios are point predictions under the stated allowables.</li>
+  <li>The model is static. Natural frequencies are estimated by scaling only; mode shapes and damping were not computed.</li>
+  <li>The deposition rates in Table 2 are one print setting and one specification of unstated basis; they are not a like-for-like comparison.</li>
+  <li>Fiber and polymer cost, machine cost and depreciation, labor, scrap and failed prints, cut-and-restart overhead per fiber run, toolpath limits (minimum strand length, minimum bend radius, end anchorage beyond the supports) and machine reliability are not covered. No cost or value conclusion should be drawn from this note.</li>
+</ul>
+
+<h2>7. Future work</h2>
+<ul class="plain">
+  <li>Polished sections of printed FibreSeeker 3 bars, to measure strand diameter, flattening, encapsulation and voids against Fig. 1 and Fig. 2.</li>
+  <li>Measurement of carbon content within the strand by image analysis of polished sections <a class="cite" href="#ref-10">[10]</a>, cross-checked by acid digestion (ASTM D3171) or inert-atmosphere TGA with char correction, and by tow linear density with fiber density (about 1.78 g/cm³).</li>
+  <li>Three-point bend tests of the three layouts in Section 3.3, using the ASTM D790 geometry as modeled (specimen length at least 125 mm), with ASTM D7264 in parallel, at least five specimens per layout, to test the predicted stiffness and first-damage ratios.</li>
+  <li>Fiber compression strength of the printed strand in PETG (ASTM D6641) and strand-to-PETG interfacial shear (ASTM D2344 short-beam shear or pull-out), to replace the transferred compression allowable and the perfect-bond assumption.</li>
+  <li>A mesh convergence study, and four-point bending (ASTM D6272) to remove the load-introduction exclusion.</li>
+  <li>Whole-part print time and cost per part at equal performance, against an established platform.</li>
+  <li>Modal analysis and vibration measurement of fiber-reinforced parts and lattices.</li>
+  <li>Characterization of auxetic continuous-fiber lattices.</li>
+</ul>
+
+<h2>8. Conclusions</h2>
+<ol>
+  <li>A printed continuous-fiber bead is a reinforced polymer: a 0.24 mm strand is 27% of a 0.70 × 0.24 mm bead, and carbon is about 16% at the assumed strand composition.</li>
+  <li>Per unit path length the 0.70 × 0.24 mm bead has 1.49 times the section of the Markforged bead; the difference is added polymer. Carbon per unit length cannot be ranked from published data.</li>
+  <li>In this model, fiber raises stiffness wherever it is laid. At the assumed compression strength (34% of tension) it raises the load to first damage only on the tension side. Fiber on the tension face alone gives 2.1× stiffness and 1.7× load to first damage with half the fiber, and that strength gain does not depend on the compression assumption.</li>
+  <li>In this model, a small amount of fiber on the tension side raises the load to first damage of a part that is almost strong enough. Fiber placed in compression adds stiffness, and at the assumed compression strength no load to first damage.</li>
+</ol>
+<p>Predict. Print. Test.</p>
+
+<h2>9. Collaboration</h2>
+<p>We are actively working with universities to quantify the strength of these materials. Universities that would like to collaborate are welcome. We provide printed material coupons for evaluation, and we conduct custom printing to evaluate the auxetic fiber lattices we are developing. Coupons and custom printing are provided subject to availability and a written agreement covering cost, intellectual property, publication rights and liability.</p>
+<p>Coupons are offered in standard geometries: tensile (ASTM D3039 or ISO 527-4/5, tabbed), flexural (ASTM D7264 or ISO 14125 for the composite; ASTM D790 for the polymer), short-beam shear (ASTM D2344) and compression (ASTM D6641), at least five per condition. Each batch is supplied with its slicer file, layer stack, fiber orientation, print parameters and conditioning record (ASTM D618). Contact <a href="mailto:research@sunn3d.com">research@sunn3d.com</a>.</p>
+
+<div class="back">
+  <h2>Data and code availability</h2>
+  <p>The finite element solver and all figure-drawing code run in this page and can be read in its source. The solver, a script that regenerates Tables 3 and 4 (<code>node code/reproduce.js</code>), the figure crop script with its scale measurements, and the third-party image attributions are archived at <a href="https://github.com/sunnyday-technologies/technical-notes/tree/main/printed-carbon-fiber">github.com/sunnyday-technologies/technical-notes</a> (printed-carbon-fiber). A Zenodo DOI will follow. Model inputs are listed in Table 1, sensitivity results in Table 4, and scale measurements for third-party figures in Section 3.2.</p>
+  <h2>Declaration of competing interest</h2>
+  <p>The author is the founder of Sunnyday Technologies, which develops continuous-fiber lattice designs and may benefit commercially from interest in this field. The author is a backer of the FibreSeeker 3 Kickstarter campaign. Sunnyday Technologies has no other commercial relationship with FibreSeek, and none with Markforged or Anisoprint, and received no funding, equipment or materials from them.</p>
+  <h2>Funding</h2>
+  <p>This work was self-funded internally by Sunnyday Technologies and received no external funding.</p>
+  <h2>Use of AI tools</h2>
+  <p>Literature search, drafting, the finite element code, figure processing and internal review (a six-reviewer critique of v1.0, and specialist physics, mechanical, chemistry, cost, manufacturing, citation and voice reviews of v1.1) were assisted by Claude (Anthropic). The author directed the work, reviewed the content and takes responsibility for it. The note has not been externally peer reviewed.</p>
+  <h2>Author contributions</h2>
+  <p>Nick Sonnentag: conceptualization, methodology, investigation, writing (review and editing), supervision.</p>
+  <h2>Why this is published openly</h2>
+  <p>I believe in Learn, Earn, Return. My education, training and experience were meant to deliver useful things, and open tools and reports like this one are part of the Return.</p>
+  <h2>Acknowledgements</h2>
+  <p>The author thanks the authors of references <a class="cite" href="#ref-7">[7]</a> and <a class="cite" href="#ref-9">[9]</a> for publishing their sections under CC BY 4.0.</p>
+  <h2>References</h2>
+  <ol class="refs">
+    <li id="ref-1">FibreSeek, FibreSeeker 3: the first consumer continuous fibre 3D printer, Kickstarter campaign, 17 November 2025 to 1 January 2026. <a href="https://www.kickstarter.com/projects/1763117873/fibreseeker-3-the-first-personal-continuous-fibre-3d-printer">https://www.kickstarter.com/projects/1763117873/fibreseeker-3-the-first-personal-continuous-fibre-3d-printer</a> (accessed 4 October 2026).</li>
+    <li id="ref-2">Makers101, FibreSeeker 3 review (roundup of campaign totals and reviewer tests). <a href="https://makers101.com/fibreseeker-3-review/">https://makers101.com/fibreseeker-3-review/</a> (accessed 4 October 2026). Secondary source.</li>
+    <li id="ref-3">Anisoprint, CCF composite carbon fiber 1.5K, product data as listed by Top 3D Shop (860 MPa tension, 290 MPa compression and 64 GPa for CCF 1.5K printed with PETG; effective strand diameter 0.36 ± 0.02 mm; 57 ± 7% fiber by volume within the as-supplied tow). <a href="https://top3dshop.com/product/anisoprint-ccf-composite-carbon-fiber-1-5k-750-m">https://top3dshop.com/product/anisoprint-ccf-composite-carbon-fiber-1-5k-750-m</a> (accessed 4 October 2026). Reseller copy; no Anisoprint datasheet could be retrieved.</li>
+    <li id="ref-4">D. Hull, T.W. Clyne, An Introduction to Composite Materials, 2nd ed., Cambridge University Press, Cambridge, 1996. <a href="https://doi.org/10.1017/CBO9781139170130">doi:10.1017/CBO9781139170130</a>. (Ch. 2, Fibres and matrices, pp. 9 to 38; Ch. 3, Fibre architecture, pp. 39 to 59; Ch. 4, Elastic deformation of long-fibre composites, pp. 60 to 77; Ch. 8, Strength of composites, pp. 158 to 207.)</li>
+    <li id="ref-5">P. Duran, Industrial composite strength now fits on your desk with FibreSeeker 3 for $2,699, 3D Printing Industry, 8 September 2025. <a href="https://3dprintingindustry.com/news/industrial-composite-strength-now-fits-on-your-desk-with-fibreseeker-3-for-2699-244122/">https://3dprintingindustry.com/news/industrial-composite-strength-now-fits-on-your-desk-with-fibreseeker-3-for-2699-244122/</a> (accessed 4 October 2026).</li>
+    <li id="ref-6">FibreSeek, FibreSeeker 3, product specifications, FibreSeek US web store. <a href="https://usstore.fibreseek3d.com/products/fibreseeker-3">https://usstore.fibreseek3d.com/products/fibreseeker-3</a> (accessed 4 October 2026).</li>
+    <li id="ref-7">M. Drilea, A. Dijkshoorn, G. Ribeiro Salomão, S. Stramigioli, G. Krijnen, Sensitivity increase of 3D printed, self-sensing, carbon fibers structures with conductive filament matrix due to flexural loading, preprint, arXiv:2512.12826 v2 (31 May 2026). <a href="https://doi.org/10.48550/arXiv.2512.12826">doi:10.48550/arXiv.2512.12826</a>. CC BY 4.0.</li>
+    <li id="ref-8">Wevolver, FibreSeek FibreSeeker 3 specifications. <a href="https://www.wevolver.com/specs/fibreseek-fibreseeker-3">https://www.wevolver.com/specs/fibreseek-fibreseeker-3</a> (accessed 4 October 2026). Aggregator.</li>
+    <li id="ref-9">F. Lupone, E. Padovano, C. Venezia, C. Badini, Experimental characterization and modeling of 3D printed continuous carbon fibers composites with different fiber orientation produced by FFF process, Polymers 14 (2022) 426. <a href="https://doi.org/10.3390/polym14030426">doi:10.3390/polym14030426</a>. CC BY 4.0.</li>
+    <li id="ref-10">J.G. Díaz, J. León-Becerra, A.D. Pertuz, O.A. González-Estrada, M.I. Jaramillo-Gutiérrez, Evaluation through SEM image processing of the volumetric fiber content in continuous fiber-reinforced additive manufacturing composites, Mater. Res. 24 (Suppl. 2) (2021) e20220049. <a href="https://doi.org/10.1590/1980-5373-MR-2022-0049">doi:10.1590/1980-5373-MR-2022-0049</a>. (Strand diameter 0.332 to 0.380 mm cited there from Blok et al. <a class="cite" href="#ref-12">[12]</a>.)</li>
+    <li id="ref-11">R. Matsuzaki, M. Ueda, M. Namiki, T.-K. Jeong, H. Asahara, K. Horiguchi, T. Nakamura, A. Todoroki, Y. Hirano, Three-dimensional printing of continuous-fiber composites by in-nozzle impregnation, Sci. Rep. 6 (2016) 23058. <a href="https://doi.org/10.1038/srep23058">doi:10.1038/srep23058</a>.</li>
+    <li id="ref-12">L.G. Blok, M.L. Longana, H. Yu, B.K.S. Woods, An investigation into 3D printing of fibre reinforced thermoplastic composites, Addit. Manuf. 22 (2018) 176-186. <a href="https://doi.org/10.1016/j.addma.2018.04.039">doi:10.1016/j.addma.2018.04.039</a>.</li>
+    <li id="ref-13">I. Papa, A.T. Silvestri, M.R. Ricciardi, V. Lopresto, A. Squillace, Effect of fibre orientation on novel continuous 3D-printed fibre-reinforced composites, Polymers 13 (2021) 2524. <a href="https://doi.org/10.3390/polym13152524">doi:10.3390/polym13152524</a>.</li>
+  </ol>
+  <p>Trademarks: FibreSeek, FibreSeeker, Markforged, X7, Anisoprint, Protopasta and Kickstarter are trademarks of their respective owners.</p>
+  <p>How to cite: N. Sonnentag, How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate, Sunnyday Technologies Technical Note, v1.2, 4 October 2026. https://sunn3d.com/research/printed-carbon-fiber/</p>
+</div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/OrbitControls.js"></script>
+<script>
+// ---------------- FEA solver (also shipped to a Web Worker) ----------------
+function feaSolve(o){
+  // 2D plane-stress Q4, layered bar, 3-point bend. Units mm, N, MPa.
+  var L=o.L,nx=o.nx,dy=o.dy,rows=o.rows,mats=o.mats,b=o.b,P=o.P,lh=o.loadHalf;
+  var ny=rows.length,dx=L/nx,N=2*(nx+1)*(ny+1),bw=2*(ny+1)+3,W=bw+1;
+  function id(i,j){return i*(ny+1)+j}
+  function q4(m){
+    var f=1/(1-m.nxy*m.nxy*m.Ey/m.Ex),D=[[m.Ex*f,m.nxy*m.Ey*f,0],[m.nxy*m.Ey*f,m.Ey*f,0],[0,0,m.G]];
+    var K=new Float64Array(64),g=1/Math.sqrt(3),xi=[-1,1,1,-1],et=[-1,-1,1,1],gp=[-g,g];
+    for(var ai=0;ai<2;ai++)for(var bi=0;bi<2;bi++){var a=gp[ai],c=gp[bi];
+      var B=[new Float64Array(8),new Float64Array(8),new Float64Array(8)];
+      for(var n=0;n<4;n++){var dNx=xi[n]*(1+et[n]*c)/2/dx,dNy=et[n]*(1+xi[n]*a)/2/dy;B[0][2*n]=dNx;B[1][2*n+1]=dNy;B[2][2*n]=dNy;B[2][2*n+1]=dNx}
+      var w=dx*dy/4*b;
+      for(var i=0;i<8;i++)for(var j=0;j<8;j++){var s=0;for(var p=0;p<3;p++)for(var q=0;q<3;q++)s+=B[p][i]*D[p][q]*B[q][j];K[i*8+j]+=s*w}}
+    return {K:K,D:D};
+  }
+  var el=mats.map(q4),A=new Float64Array(N*W),i,j,p,q;
+  for(i=0;i<nx;i++)for(j=0;j<ny;j++){var e=el[rows[j]],nd=[id(i,j),id(i+1,j),id(i+1,j+1),id(i,j+1)],dof=[];
+    for(p=0;p<4;p++)dof.push(2*nd[p],2*nd[p]+1);
+    for(p=0;p<8;p++)for(q=0;q<8;q++){var r=dof[p],cc=dof[q];if(cc>=r)A[r*W+cc-r]+=e.K[p*8+q]}}
+  var F=new Float64Array(N),top=[];
+  for(i=0;i<=nx;i++)if(Math.abs(i*dx-L/2)<=lh+1e-9)top.push(i);
+  top.forEach(function(k){F[2*id(k,ny)+1]-=P/top.length});
+  [2*id(0,0),2*id(0,0)+1,2*id(nx,0)+1].forEach(function(d){A[d*W]+=1e12});
+  for(var r0=0;r0<N;r0++){var dr=A[r0*W];
+    for(var k=1;k<=bw&&r0+k<N;k++){var av=A[r0*W+k];if(av===0)continue;var fc=av/dr;
+      for(var l=k;l<=bw&&r0+l<N;l++){var v=A[r0*W+l];if(v!==0)A[(r0+k)*W+l-k]-=fc*v}
+      F[r0+k]-=fc*F[r0]}}
+  var u=new Float64Array(N);
+  for(r0=N-1;r0>=0;r0--){var s=F[r0];for(k=1;k<=bw&&r0+k<N;k++)s-=A[r0*W+k]*u[r0+k];u[r0]=s/A[r0*W]}
+  var sx=new Float64Array(nx*ny);
+  for(i=0;i<nx;i++)for(j=0;j<ny;j++){var D=el[rows[j]].D,n4=[id(i,j),id(i+1,j),id(i+1,j+1),id(i,j+1)];
+    var ux=n4.map(function(t){return u[2*t]}),uy=n4.map(function(t){return u[2*t+1]});
+    var ex=((ux[1]-ux[0])+(ux[2]-ux[3]))/(2*dx),ey=((uy[3]-uy[0])+(uy[2]-uy[1]))/(2*dy);
+    sx[i*ny+j]=D[0][0]*ex+D[0][1]*ey}
+  return {u:u,sx:sx,mid:-u[2*id(nx/2,0)+1]};
+}
+
+(function(){
+const LBF=4.44822, IN=25.4;
+const G={L:101.6,b:12.7,dy:0.12,ny:52,nx:120,P:30*LBF,loadHalf:2.5};
+const PLASTIC={PLA:{E:3500,st:50,sc:65},PETG:{E:2000,st:45,sc:55},PA:{E:1700,st:60,sc:60}};
+const CF={E:230000,s:3500,etaE:0.85,etaS:0.55};
+const AF=Math.PI/4*0.24*0.24, AB=0.70*0.24, BEADS=15, COVER=BEADS*0.7/12.7;
+const st={mat:'PETG',nf:3,vf:0.6,cf:0.34};
+const BARS=[{key:'none',name:'No fiber'},{key:'both',name:'Fiber near both faces'},{key:'bottom',name:'Fiber on tension face'}];
+
+function model(){
+  const m=PLASTIC[st.mat], Vc=AF/AB*st.vf, Eb=CF.etaE*Vc*CF.E+(1-Vc)*m.E, ExL=COVER*Eb+(1-COVER)*m.E;
+  const sbT=CF.etaS*Vc*CF.s, sbC=st.cf*sbT;
+  const mats=[{Ex:m.E,Ey:m.E,nxy:.35,G:m.E/2.7},{Ex:ExL,Ey:m.E*1.1,nxy:.3,G:m.E/2.6}];
+  const bot=[0,0];for(let k=0;k<st.nf;k++)bot.push(1,1,0);
+  const plans={none:Array(G.ny).fill(0),
+    both:bot.concat(Array(G.ny-2*bot.length).fill(0),bot.slice().reverse()),
+    bottom:bot.concat(Array(G.ny-bot.length).fill(0))};
+  return {m,Vc,Eb,ExL,sbT,sbC,mats,plans};
+}
+// utilization (fraction of breaking stress) per element at load P
+function util(M,rows,sx,i,j){
+  const s=sx[i*G.ny+j];
+  if(rows[j]===1){const sb=s*M.Eb/M.ExL;return sb>0?sb/M.sbT:-sb/M.sbC}
+  return s>0?s/M.m.st:-s/M.m.sc;
+}
+function summarize(M,rows,r){
+  const dx=G.L/G.nx;let um=0;
+  // Elements within 6 mm of the load and 4 mm of the supports are excluded (contact stresses). The bending
+  // moment varies linearly along the span, so each checked element is scaled to the peak (midspan) moment.
+  for(let i=0;i<G.nx;i++){const x=(i+.5)*dx,a=Math.abs(x-G.L/2);if(a<6||x<4||x>G.L-4)continue;
+    const k=(G.L/2)/(G.L/2-a);
+    for(let j=0;j<G.ny;j++)um=Math.max(um,k*util(M,rows,r.sx,i,j))}
+  const fiberRows=rows.filter(v=>v===1).length;
+  return {sag:r.mid,failP:G.P/um,carbon:fiberRows/G.ny*COVER*M.Vc};
+}
+
+// ---------------- worker ----------------
+let worker=null, jobId=0;
+try{
+  const src=feaSolve.toString()+';onmessage=function(e){var d=e.data,out=d.jobs.map(function(j){return feaSolve(j)});postMessage({id:d.id,out:out.map(function(o){return {sx:o.sx,u:o.u,mid:o.mid}})})};';
+  worker=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})));
+}catch(e){worker=null}
+function solveAll(jobs){
+  return new Promise(res=>{
+    const id=++jobId;
+    if(worker){
+      const h=e=>{if(e.data.id!==id)return;worker.removeEventListener('message',h);res(e.data.out)};
+      worker.addEventListener('message',h);
+      worker.addEventListener('error',()=>{worker=null;res(jobs.map(feaSolve))},{once:true});
+      worker.postMessage({id,jobs});
+    }else setTimeout(()=>res(jobs.map(feaSolve)),20);
+  });
+}
+
+// ---------------- color map ----------------
+function turbo(t){t=Math.min(1,Math.max(0,t)); // Sunnyday utilization map: pale blue -> navy -> amber -> red
+  const S=[[0,[228,235,243]],[.35,[142,171,207]],[.6,[47,95,153]],[.8,[1,58,115]],[.9,[216,151,60]],[1,[179,64,47]]];
+  for(let k=1;k<S.length;k++)if(t<=S[k][0]){const a=S[k-1],b=S[k],f=(t-a[0])/(b[0]-a[0]);return a[1].map((v,q)=>(v+(b[1][q]-v)*f)/255)}
+  return S[S.length-1][1].map(v=>v/255);}
+document.getElementById('cbarGrad').style.background='linear-gradient(90deg,'+[0,.2,.4,.6,.8,1].map(t=>'rgb('+turbo(.1+.9*t).map(v=>Math.round(v*255)).join(',')+')').join(',')+')';
+
+// ---------------- cross-section drawing (2D canvas) ----------------
+function rng(seed){return function(){seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function stadium(ctx,x0,y0,w,h){const r=h/2;ctx.beginPath();ctx.moveTo(x0+r,y0);ctx.lineTo(x0+w-r,y0);ctx.arc(x0+w-r,y0+r,r,-Math.PI/2,Math.PI/2);ctx.lineTo(x0+r,y0+h);ctx.arc(x0+r,y0+r,r,Math.PI/2,Math.PI*1.5);ctx.closePath()}
+const LOOK={ // cut-face appearance per plastic
+  PETG:{a:'#e3f1f2',b:'#bcd9dd',seam:'rgba(255,255,255,.55)',edge:'rgba(70,110,118,.35)',name:'clear PETG'},
+  PLA:{a:'#f3f3ee',b:'#dcded6',seam:'rgba(255,255,255,.6)',edge:'rgba(90,96,90,.3)',name:'natural PLA'},
+  PA:{a:'#f1ece0',b:'#ddd5c2',seam:'rgba(255,255,255,.55)',edge:'rgba(110,98,76,.3)',name:'natural nylon'}};
+function drawSection(cv,rows,pxPerMm,noise){
+  const W=12.7,H=rows.length*G.dy,lk=LOOK[st.mat];
+  cv.width=Math.round(W*pxPerMm);cv.height=Math.round(H*pxPerMm);
+  const ctx=cv.getContext('2d',{willReadFrequently:true}),k=pxPerMm,rand=rng(5);
+  ctx.setTransform(k,0,0,k,0,0);
+  // translucent plastic: soft diagonal light through the cut face
+  const gr=ctx.createLinearGradient(0,0,W,H);gr.addColorStop(0,lk.a);gr.addColorStop(.55,lk.b);gr.addColorStop(1,lk.a);
+  ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
+  const Y=z=>H-z;
+  // layer seams: a bright refraction line over a faint dark edge
+  for(let j=1;j<rows.length;j++){const y=Y(j*G.dy);
+    ctx.strokeStyle=lk.edge;ctx.lineWidth=1.4/k;ctx.beginPath();ctx.moveTo(0,y+.6/k);ctx.lineTo(W,y+.6/k);ctx.stroke();
+    ctx.strokeStyle=lk.seam;ctx.lineWidth=1/k;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+  // perimeter wall seams and small trapped-air voids where beads meet
+  [0.45,0.9,W-0.9,W-0.45].forEach(x=>{ctx.strokeStyle=lk.edge;ctx.lineWidth=1.2/k;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()});
+  const bubble=(x,y,r)=>{ctx.fillStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.ellipse(x,y,r*1.6,r,0,0,7);ctx.fill();ctx.strokeStyle=lk.edge;ctx.lineWidth=.8/k;ctx.stroke()};
+  for(let j=1;j<rows.length;j++)for(const x of [0.45,0.9,W-0.9,W-0.45])if(rand()<.5)bubble(x,Y(j*G.dy),.012+rand()*.012);
+  // fiber layers: clear bead, black carbon strand
+  const x0=(W-BEADS*0.7)/2;
+  for(let j=0;j<rows.length;j++){
+    if(rows[j]!==1||(j>0&&rows[j-1]===1&&(j<2||rows[j-2]!==1)))continue;
+    const top=Y(j*G.dy+0.24);
+    for(let n=0;n<BEADS;n++){
+      const bx=x0+n*0.7;
+      stadium(ctx,bx+.004,top+.004,0.692,0.232);ctx.strokeStyle=lk.edge;ctx.lineWidth=1.2/k;ctx.stroke();
+      if(rand()<.7)bubble(bx,top+(rand()<.5?0:.24),.016+rand()*.012);
+      const cx=bx+0.35+(rand()-.5)*.02,cy=top+0.12+(rand()-.5)*.01;
+      ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.ellipse(cx+.012,cy+.016,.13,.125,0,0,7);ctx.fill(); // shadow in the clear plastic
+      const cg=ctx.createRadialGradient(cx-.04,cy-.05,.005,cx,cy,.12);cg.addColorStop(0,'#3a4148');cg.addColorStop(.35,'#121519');cg.addColorStop(1,'#050607');
+      ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,0.12,0,7);ctx.fill();
+      ctx.fillStyle='rgba(150,165,175,.35)';
+      for(let d=0;d<34;d++){const a=rand()*7,r=Math.sqrt(rand())*0.105;ctx.fillRect(cx+r*Math.cos(a)-.005,cy+r*Math.sin(a)-.005,.01,.01)}
+    }
+  }
+  if(noise){ctx.setTransform(1,0,0,1,0,0);const im=ctx.getImageData(0,0,cv.width,cv.height),d=im.data,r2=rng(9);
+    for(let i=0;i<d.length;i+=4){const n=(r2()+r2()-1)*5;d[i]+=n;d[i+1]+=n;d[i+2]+=n}ctx.putImageData(im,0,0)}
+  return cv;
+}
+
+// ---------------- single-bead micrograph ----------------
+const RF=0.0035;
+function filaments(cx,cy,R,vf,rand){
+  const s=Math.sqrt(Math.PI*RF*RF/(vf*Math.sqrt(3)/2)),h=s*Math.sqrt(3)/2,th=rand()*Math.PI,c=Math.cos(th),sn=Math.sin(th),j=(s-2*RF)*0.45;
+  const out=[],n=Math.ceil(R/h)+2,m=Math.ceil(R/s)+2,lim=(R-RF*1.1)**2;
+  for(let q=-n;q<=n;q++)for(let p=-m;p<=m;p++){const x=p*s+(q&1?s/2:0)+(rand()-.5)*2*j,y=q*h+(rand()-.5)*2*j,X=x*c-y*sn,Y=x*sn+y*c;if(X*X+Y*Y<=lim)out.push([cx+X,cy+Y])}
+  return out;
+}
+function drawBead(cv,annotate){
+  const W=0.92,H=0.44,cssW=cv.parentElement.clientWidth||300,dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.style.height=(cssW*H/W)+'px';cv.width=Math.round(cssW*dpr);cv.height=Math.round(cssW*H/W*dpr);
+  const ctx=cv.getContext('2d'),k=cv.width/W,rand=rng(7),px=cssW/W;
+  ctx.setTransform(k,0,0,k,0,0);ctx.fillStyle='#1d2022';ctx.fillRect(0,0,W,H);
+  const bx=(W-0.70)/2,by=(H-0.24)/2;
+  stadium(ctx,bx,by,0.70,0.24);ctx.fillStyle='#6b7276';ctx.fill();ctx.strokeStyle='rgba(10,12,13,.7)';ctx.lineWidth=1.5/k;ctx.stroke();
+  ctx.fillStyle='#545b60';ctx.beginPath();ctx.arc(W/2,by+.12,.12,0,7);ctx.fill();
+  for(const [x,y] of filaments(W/2,by+.12,.12,st.vf,rand)){
+    ctx.fillStyle='#2f3437';ctx.beginPath();ctx.arc(x,y,RF*1.18,0,7);ctx.fill();
+    ctx.fillStyle='#cdd2d5';ctx.beginPath();ctx.arc(x,y,RF,0,7);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.38)';ctx.beginPath();ctx.arc(x-RF*.25,y-RF*.25,RF*.45,0,7);ctx.fill()}
+  ctx.setTransform(1,0,0,1,0,0);const im=ctx.getImageData(0,0,cv.width,cv.height),d=im.data,r2=rng(11);
+  for(let i=0;i<d.length;i+=4){const n=(r2()+r2()-1)*11;d[i]+=n;d[i+1]+=n;d[i+2]+=n}ctx.putImageData(im,0,0);
+  if(!annotate)return;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const fs=Math.max(9.5,Math.min(13,cssW/58)),X=v=>v*px,A='#ffffff';
+  const lab=(t,x,y,al)=>{ctx.font='500 '+fs+'px "IBM Plex Mono",Consolas,monospace';ctx.textAlign=al||'center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(6,13,20,.9)';ctx.strokeText(t,x,y);ctx.fillStyle=A;ctx.fillText(t,x,y)};
+  ctx.strokeStyle=A;ctx.lineWidth=1;ctx.beginPath();
+  const y0=X(by)-12;ctx.moveTo(X(bx),y0);ctx.lineTo(X(bx+.7),y0);ctx.moveTo(X(bx),y0-5);ctx.lineTo(X(bx),y0+5);ctx.moveTo(X(bx+.7),y0-5);ctx.lineTo(X(bx+.7),y0+5);
+  const x1=X(bx+.7)+10;ctx.moveTo(x1,X(by));ctx.lineTo(x1,X(by+.24));ctx.moveTo(x1-5,X(by));ctx.lineTo(x1+5,X(by));ctx.moveTo(x1-5,X(by+.24));ctx.lineTo(x1+5,X(by+.24));ctx.stroke();
+  lab('0.028 in (0.7 mm)',X(W/2),y0-fs*.9);lab('0.0094 in',x1+8,X(by+.12),'left');
+  lab('fiber strand 27%',X(W/2),X(by+.24)+fs*1.4);
+  lab('plastic',X(bx+.1),X(by+.12)-fs*.7);lab('73%',X(bx+.1),X(by+.12)+fs*.7);
+  lab('plastic',X(bx+.6),X(by+.12)-fs*.7);lab('73%',X(bx+.6),X(by+.12)+fs*.7);
+  ctx.fillStyle='#f0f4f7';ctx.fillRect(X(.025),X(H)-10,X(.1016),3);lab('0.004 in',X(.025),X(H)-10-fs*.8,'left');
+}
+
+// ---------------- three.js scene ----------------
+const stage=document.getElementById('stage'),cv3=document.getElementById('three'),tagsEl=document.getElementById('tags');
+let renderer=null,scene,camera,controls,barGroup;
+const EXAG=3, OFF=[30,0,-30];
+function initThree(){
+  if(!window.THREE){document.getElementById('busy').textContent='3D view unavailable (could not load three.js). Results table still works.';return false}
+  renderer=new THREE.WebGLRenderer({canvas:cv3,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.setClearColor(0xf3f5f8,1);
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(28,1,1,2000);
+  camera.position.set(-62,22,205);
+  scene.add(new THREE.AmbientLight(0xffffff,.9));
+  const dl=new THREE.DirectionalLight(0xffffff,.35);dl.position.set(-60,120,140);scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0xffffff,.18);dl2.position.set(80,-40,-60);scene.add(dl2);
+  if(THREE.OrbitControls){controls=new THREE.OrbitControls(camera,cv3);controls.target.set(0,0,0);controls.enablePan=false;controls.minDistance=60;controls.maxDistance=320;controls.addEventListener('change',render);controls.update()}
+  camera.lookAt(0,0,0);
+  new ResizeObserver(resize).observe(stage);resize();
+  return true;
+}
+function resize(){if(!renderer)return;const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;
+  camera.fov=w<560?40:28;camera.updateProjectionMatrix();render()}
+function render(){if(!renderer)return;renderer.render(scene,camera);placeTags()}
+
+function barMesh(M,rows,r,yOff,scaleRef){
+  const nx=G.nx,ny=G.ny,dx=G.L/nx,dy=G.dy,h=ny*dy,hb=G.b/2,u=r.u;
+  const P=(i,j)=>{const n=i*(ny+1)+j;return [i*dx-G.L/2+u[2*n]*EXAG, j*dy-h/2+u[2*n+1]*EXAG+yOff]};
+  const pos=[],col=[];
+  const quad=(a,b,c,d,cl)=>{for(const v of [a,b,c,a,c,d]){pos.push(v[0],v[1],v[2]);col.push(cl[0],cl[1],cl[2])}};
+  const C=(i,j)=>turbo(.1+.9*util(M,rows,r.sx,i,j)*scaleRef);
+  for(let i=0;i<nx;i++)for(let j=0;j<ny;j++){
+    const cl=C(i,j),p1=P(i,j),p2=P(i+1,j),p3=P(i+1,j+1),p4=P(i,j+1);
+    quad([p1[0],p1[1],hb],[p2[0],p2[1],hb],[p3[0],p3[1],hb],[p4[0],p4[1],hb],cl);
+    quad([p2[0],p2[1],-hb],[p1[0],p1[1],-hb],[p4[0],p4[1],-hb],[p3[0],p3[1],-hb],cl);
+    if(j===ny-1)quad([p4[0],p4[1],hb],[p3[0],p3[1],hb],[p3[0],p3[1],-hb],[p4[0],p4[1],-hb],cl);
+    if(j===0)quad([p2[0],p2[1],hb],[p1[0],p1[1],hb],[p1[0],p1[1],-hb],[p2[0],p2[1],-hb],cl);
+  }
+  // right end cap (plain)
+  const gr=[.35,.4,.44];
+  for(let j=0;j<ny;j++){const a=P(nx,j),c=P(nx,j+1);quad([a[0],a[1],hb],[a[0],a[1],-hb],[c[0],c[1],-hb],[c[0],c[1],hb],gr)}
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
+  const grp=new THREE.Group();
+  grp.add(new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide})));
+  // left end cap with the to-scale cross-section texture
+  const tc=drawSection(document.createElement('canvas'),rows,40,false);
+  const tex=new THREE.CanvasTexture(tc);
+  const cap=new THREE.Mesh(new THREE.PlaneGeometry(G.b,h),new THREE.MeshBasicMaterial({map:tex}));
+  const l0=P(0,0);cap.position.set(l0[0]-0.02,yOff,0);cap.rotation.y=-Math.PI/2;grp.add(cap);
+  // supports and load nose
+  const sm=new THREE.MeshLambertMaterial({color:0x6a8faa});
+  for(const sx of [-G.L/2,G.L/2]){const s=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,G.b+4,24),sm);s.rotation.x=Math.PI/2;s.position.set(sx,-h/2-2.4+yOff,0);grp.add(s)}
+  const midDef=-r.mid*EXAG;
+  const nose=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,G.b+4,24),new THREE.MeshLambertMaterial({color:0x4a5560}));nose.rotation.x=Math.PI/2;nose.position.set(0,h/2+2.4+yOff+midDef,0);grp.add(nose);
+  return grp;
+}
+
+let last=null;
+function placeTags(){
+  if(!last||!renderer)return;
+  const w=stage.clientWidth,h=stage.clientHeight;
+  tagsEl.innerHTML='';
+  BARS.forEach((B,k)=>{
+    const v=new THREE.Vector3(-G.L/2,OFF[k]+G.ny*G.dy/2+3.5,G.b/2).project(camera);
+    const d=document.createElement('div');d.className='tag';
+    d.style.left=Math.max(4,Math.min(w-220,(v.x+1)/2*w))+'px';d.style.top=((1-v.y)/2*h)+'px';
+    const s=last.sum[k];d.innerHTML=B.name+' · <b>'+(s.carbon*100).toFixed(1)+'% carbon by volume</b>';
+    tagsEl.appendChild(d);
+  });
+}
+
+// ---------------- results ----------------
+function fmt(x,d){return x.toFixed(d)}
+function showResults(sum){
+  const b=sum[0];
+  let html='<tr><th>Layout</th><th>Deflection</th><th>Stiffness</th><th>Load to first damage</th></tr>';
+  BARS.forEach((B,k)=>{const s=sum[k],kS=b.sag/s.sag,kF=s.failP/b.failP;
+    html+='<tr><td>'+B.name+'</td><td>'+fmt(s.sag/IN,3)+' in</td><td class="'+(k&&kS>1.05?'up':'')+'">'+(k?fmt(kS,1)+'×':'1×')+'</td><td class="'+(k?(kF>=1.05?'up':kF<0.95?'down':''):'')+'">'+fmt(s.failP/LBF,0)+' lbf'+(k?' ('+fmt(kF,1)+'×)':'')+'</td></tr>'});
+  document.getElementById('res').innerHTML=html;
+  const k1=b.sag/sum[1].sag,f1=sum[1].failP/b.failP,k2=b.sag/sum[2].sag,f2=sum[2].failP/b.failP;
+  document.getElementById('tBothS').textContent=k1.toFixed(1);document.getElementById('tBotS').textContent=k2.toFixed(1);document.getElementById('tBotF').textContent=f2.toFixed(1);
+  {const x=f1.toFixed(1);document.getElementById('tBothV').textContent=f1<0.95?'In this model those top layers reach their estimated first-damage stress first, at a lower load than the plain bar ('+x+'×).':f1<=1.05?'In this model those top layers reach their estimated first-damage stress first, at about the same load as the plain bar ('+x+'×).':'In this model the bar reaches '+x+'× the load to first damage; the top fiber layers still reach their estimated first-damage stress first.';
+  document.getElementById('tBothV2').textContent=f1<=1.05?'This layout increases stiffness but not the load to first damage.':'At this compression strength the layout increases both stiffness and the load to first damage.';
+  document.getElementById('tCf').textContent=Math.round(st.cf*100);}
+  {const Mv=model();document.getElementById('tBeadC').textContent='~'+Math.round(Mv.Vc*100)+'%';document.getElementById('tVf').textContent=Math.round(st.vf*100);document.getElementById('tBarC').textContent=(sum[1].carbon*100).toFixed(1);}
+  document.querySelectorAll('.tMat').forEach(e=>e.textContent=LOOK[st.mat].name);
+  drawCmp(sum);
+}
+function drawCmp(sum){
+  const M=model(),rows=[
+    ['Autoclave-cured carbon','aerospace laminate',55,65],['Robot-laid thermoplastic tape','automated layup',55,60],
+    ['Vacuum infusion','boats, wind blades',45,55],['Wet hand layup','brush and roller',30,40],
+    ['Chopped carbon filament','short fibers',7,15],
+    ['One printed fiber bead','this note',M.Vc*100,null],['Bar, fiber near both faces','this note',sum[1].carbon*100,null]];
+  const g=document.getElementById('cmp');g.textContent='';
+  for(const [n,s,lo,hi] of rows){
+    const nm=document.createElement('div');nm.className='cmp-name';nm.textContent=n;
+    const sm=document.createElement('small');sm.textContent=hi===null?s+': '+lo.toFixed(1)+'%':s+': '+lo+' to '+hi+'%';nm.appendChild(sm);
+    const tr=document.createElement('div');tr.className='track';const bar=document.createElement('i');
+    if(hi===null){bar.className='ours';bar.style.left='0';bar.style.width=Math.max(.6,lo/70*100)+'%'}else{bar.style.left=(lo/70*100)+'%';bar.style.width=((hi-lo)/70*100)+'%'}
+    tr.appendChild(bar);g.append(nm,tr)}
+  const ax=document.createElement('div');ax.className='axis';
+  for(let v=0;v<=70;v+=10){const t=document.createElement('span');t.style.left=(v/70*100)+'%';t.textContent=v;ax.appendChild(t)}
+  g.append(document.createElement('div'),ax);
+}
+
+let pending=0;
+async function update(){
+  const my=++pending;document.getElementById('busy').hidden=false;
+  const M=model(),jobs=BARS.map(B=>({L:G.L,nx:G.nx,dy:G.dy,rows:M.plans[B.key],mats:M.mats,b:G.b,P:G.P,loadHalf:G.loadHalf}));
+  const out=await solveAll(jobs);
+  if(my!==pending)return;
+  const sum=out.map((r,k)=>summarize(M,M.plans[BARS[k].key],r));
+  last={M,out,sum};
+  showResults(sum);
+  drawSection(document.getElementById('xsec'),M.plans.both,40,true);
+  if(renderer){
+    if(barGroup){scene.remove(barGroup);barGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}})}
+    barGroup=new THREE.Group();
+    out.forEach((r,k)=>barGroup.add(barMesh(M,M.plans[BARS[k].key],r,OFF[k],1)));
+    scene.add(barGroup);render();
+  }
+  document.getElementById('busy').hidden=true;
+}
+
+function bind(id,key,f,outFmt){const el=document.getElementById(id),o=document.getElementById(id+'Out');
+  el.addEventListener('input',()=>{st[key]=f(el.value);if(o)o.textContent=outFmt(el.value);if(key==='vf'){drawBead(document.getElementById('beadMini'),false);drawBead(document.getElementById('fig1'),true);drawCompare()}clearTimeout(bind.t);bind.t=setTimeout(update,180)})}
+bind('nf','nf',v=>+v,v=>v);bind('vf','vf',v=>v/100,v=>v+'%');bind('cf','cf',v=>v/100,v=>v+'%');
+document.getElementById('mat').addEventListener('change',e=>{st.mat=e.target.value;update()});
+
+
+// ---------------- same-scale comparison plate ----------------
+const CMP={W:960,H:600,K:0.3}; // logical px per µm
+const CROPS=[{f:'figs/markforged-strand.jpg',k:0.6,x:20,y:96,tag:'A'},{f:'figs/anisoprint-pair.jpg',k:0.6,x:205,y:40,tag:'B'},{f:'figs/markforged-laminate.jpg',k:0.35,x:20,y:350,tag:'D'}];
+const cmpImgs=CROPS.map(c=>{const im=new Image();im.onload=drawCompare;im.src=c.f;return im});
+function modelMicro(ctx,x,y,wmm,hmm,layers,seed){
+  const rand=rng(seed),S=CMP.K*1000;
+  ctx.save();ctx.translate(x,y);ctx.beginPath();ctx.rect(0,0,wmm*S,hmm*S);ctx.clip();ctx.scale(S,S);
+  ctx.fillStyle=layers===1?'#7a7b7c':'#9b9b9a';ctx.fillRect(0,0,wmm,hmm);
+  const bead=(bx,by)=>{stadium(ctx,bx+.004,by+.004,.692,.232);ctx.fillStyle='#9b9b9a';ctx.fill();ctx.strokeStyle='rgba(40,40,40,.22)';ctx.lineWidth=.002;ctx.stroke();
+    const cx=bx+.35+(rand()-.5)*.02,cy=by+.12+(rand()-.5)*.01;ctx.fillStyle='#949493';ctx.beginPath();ctx.arc(cx,cy,.12,0,7);ctx.fill();
+    ctx.fillStyle='#eceeef';for(const [fx,fy] of filaments(cx,cy,.12,st.vf,rand)){ctx.beginPath();ctx.arc(fx,fy,RF,0,7);ctx.fill()}};
+  if(layers===1)bead((wmm-.7)/2,(hmm-.24)/2);
+  else for(let L=0;L*0.24<hmm;L++){const by=hmm-(L+1)*.24,off=L%2?-.35:0;for(let bx=off;bx<wmm;bx+=.7)bead(bx,by)}
+  ctx.restore();
+  const T=ctx.getTransform(),X0=Math.round(T.a*x+T.e),Y0=Math.round(T.d*y+T.f),w=Math.round(T.a*wmm*S),h=Math.round(T.d*hmm*S);
+  const im=ctx.getImageData(X0,Y0,w,h),d=im.data,r2=rng(seed+3);for(let i=0;i<d.length;i+=4){const n=(r2()+r2()-1)*12;d[i]+=n;d[i+1]+=n;d[i+2]+=n}ctx.putImageData(im,X0,Y0);
+}
+function drawCompare(){
+  const cv=document.getElementById('cmpCanvas');if(!cv)return;
+  const cssW=Math.max(640,cv.parentElement.clientWidth),dpr=Math.min(window.devicePixelRatio||1,2),s=cssW/CMP.W;
+  cv.style.height=(CMP.H*s)+'px';cv.width=Math.round(cssW*dpr);cv.height=Math.round(CMP.H*s*dpr);
+  const ctx=cv.getContext('2d',{willReadFrequently:true});ctx.setTransform(s*dpr,0,0,s*dpr,0,0);
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,CMP.W,CMP.H);
+  CROPS.forEach((c,i)=>{const im=cmpImgs[i];if(im.complete&&im.naturalWidth){ctx.drawImage(im,c.x,c.y,im.naturalWidth/c.k*CMP.K,im.naturalHeight/c.k*CMP.K)}});
+  modelMicro(ctx,520,98,0.92,0.44,1,7);
+  modelMicro(ctx,330,350,0.826,0.643,3,21);
+  const tag=(t,x,y,sub)=>{ctx.font='600 18px "IBM Plex Mono",Consolas,monospace';ctx.fillStyle='#013a73';ctx.textBaseline='top';ctx.fillText(t,x,y);ctx.font='12px "IBM Plex Mono",Consolas,monospace';ctx.fillStyle='#333333';ctx.fillText(sub,x+20,y+4)};
+  tag('A',20,70,'Markforged strand');tag('B',205,14,'Anisoprint 1.5K, PETG');tag('C',520,70,'0.24 mm FibreSeeker 3 format bead (model)');
+  tag('D',20,322,'Markforged printed, 0.125 mm layers');tag('E',330,322,'0.24 mm layers (model, no voids)');
+  ctx.fillStyle='#111417';ctx.fillRect(20,572,500*CMP.K,4);ctx.font='12px "IBM Plex Mono",Consolas,monospace';ctx.fillText('0.020 in (500 µm), all panels',20+500*CMP.K+12,566);
+}
+initThree();
+drawCompare();
+drawBead(document.getElementById('beadMini'),false);
+drawBead(document.getElementById('fig1'),true);
+let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{drawBead(document.getElementById('beadMini'),false);drawBead(document.getElementById('fig1'),true);drawCompare()},150)}).observe(document.body);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>drawBead(document.getElementById('fig1'),true));
+update();
+})();
+</script>
+
+</body>
+</html>

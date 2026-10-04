@@ -1,0 +1,41 @@
+{
+ "markforged-strand": {
+  "file": "markforged-strand.jpg",
+  "px_per_um": 0.6,
+  "width_um": 460,
+  "height_um": 397,
+  "source": "lupone2022-fig4.jpg",
+  "box": [
+   12,
+   12,
+   346,
+   300
+  ]
+ },
+ "anisoprint-pair": {
+  "file": "anisoprint-pair.jpg",
+  "px_per_um": 0.6,
+  "width_um": 910,
+  "height_um": 840,
+  "source": "drilea2026-fig9.png",
+  "box": [
+   420,
+   330,
+   1580,
+   1400
+  ]
+ },
+ "markforged-laminate": {
+  "file": "markforged-laminate.jpg",
+  "px_per_um": 0.35,
+  "width_um": 826,
+  "height_um": 643,
+  "source": "lupone2022-fig6.jpg",
+  "box": [
+   118,
+   292,
+   407,
+   517
+  ]
+ }
+}
