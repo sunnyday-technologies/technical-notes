@@ -1,4 +1,4 @@
-// FEA solver used in "How strong is 3D printed continuous carbon fiber?" (Sunnyday Technologies Technical Note, v1.2).
+// FEA solver used in "How strong is 3D printed continuous carbon fiber?" (Sunnyday Technologies Technical Note, v1.0).
 // 2D plane-stress, four-node quadrilateral elements (2x2 Gauss), layered orthotropic bar in three-point bending.
 // Units: mm, N, MPa. Banded Cholesky (LDL^T) solver. Returns nodal displacements u, element-centre sigma_x and midspan deflection.
 // Inputs: {L, nx, dy, rows (material index per element row, bottom to top), mats [{Ex,Ey,nxy,G}], b (width), P (load, N), loadHalf (mm)}.

@@ -1,4 +1,4 @@
-# How strong is 3D printed continuous carbon fiber? (Technical note v1.2)
+# How strong is 3D printed continuous carbon fiber? (Technical note v1.0)
 
 Nick Sonnentag, Sunnyday Technologies. ORCID 0009-0002-1897-384X. Correspondence: research@sunn3d.com.
 Interactive version: https://sunn3d.com/research/printed-carbon-fiber/

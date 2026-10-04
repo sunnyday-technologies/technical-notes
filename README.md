@@ -4,7 +4,7 @@ Technical notes from Sunnyday Technologies. They are self-published and not peer
 
 | Note | Version | Folder | Interactive version |
 |---|---|---|---|
-| How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate | 1.2 (4 October 2026) | [`printed-carbon-fiber/`](printed-carbon-fiber/) | https://sunn3d.com/research/printed-carbon-fiber/ |
+| How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate | 1.0 (4 October 2026) | [`printed-carbon-fiber/`](printed-carbon-fiber/) | https://sunn3d.com/research/printed-carbon-fiber/ |
 
 Correspondence and collaboration: research@sunn3d.com
 
@@ -14,4 +14,4 @@ Text, code and original figures are released under CC BY 4.0 (see `LICENSE`). Th
 
 ## How to cite
 
-N. Sonnentag, How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate, Sunnyday Technologies Technical Note, v1.2, 4 October 2026. https://sunn3d.com/research/printed-carbon-fiber/ (Zenodo DOI to follow)
+N. Sonnentag, How strong is 3D printed continuous carbon fiber? Bead geometry, same-scale sections and a layered finite element estimate, Sunnyday Technologies Technical Note, v1.0, 4 October 2026. https://sunn3d.com/research/printed-carbon-fiber/ (Zenodo DOI to follow)
